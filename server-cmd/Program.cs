@@ -1,0 +1,42 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using MorphSDK.Client;
+using MorphCmd.Utils;
+using MorphCmd.BL;
+
+namespace MorphCmd
+{
+    class Program
+    {      
+
+        static void Main(string[] args)
+        {
+
+            if (args.Length < 2)
+            {
+                Console.WriteLine("Not all parameters were specified");
+                Console.WriteLine("Usage sample: ems-cmd <command> <url> -param1=value -param2=value2");
+                Console.WriteLine("<command> - Supported commands: status, run, runasync, upload, download ");
+                Console.WriteLine("<url> - path to the server, e.g. http://10.20.30.40:6330 ");
+                Environment.Exit(0);
+            }
+            var param = CmdParametersHelper.ParseParams(args);
+            MainAsync(args[0], args[1], param).Wait();
+        }
+
+
+
+        static async Task MainAsync(string command, string url, Dictionary<string, string> paramsDict)
+        {
+            var apiClient = new MorphServerApiClient(url);
+            var output = new ConsoleOutput();
+            var input = new ConsoleInput();
+            var handler = new CommandsHandler(output, input, apiClient);
+            await handler.Handle(command, paramsDict);
+        }
+    }
+
+
+
+}
