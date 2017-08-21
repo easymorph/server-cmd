@@ -12,6 +12,7 @@ namespace MorphCmd.Models
         public string Space { get; set; }
         public string From { get; set; }
         public string To { get; set; }
+        public string Location { get; set; }
         public Guid? TaskId { get; set; }
         public bool YesToAll { get; set; }
     }

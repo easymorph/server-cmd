@@ -11,20 +11,31 @@ namespace MorphCmd.Utils
         public static Dictionary<string, string> ParseParams(string[] args)
         {
             var result = new Dictionary<string, string>();
-            foreach (string arg in args.Where(x => x.StartsWith("-") || x.StartsWith("/")))
+
+            Queue<string> paramsQ = new Queue<string>(args);
+            try
             {
-                string[] parts = arg.Split('=');
-                if (parts.Length > 0)
+                while (paramsQ.Count > 0)
                 {
-                    string key = parts[0].Trim().ToLowerInvariant();
-                    string val = parts[1].Trim();
-                    if (key.Length > 1)
+                    var param = paramsQ.Dequeue();
+                    if (param.StartsWith("-"))
                     {
-                        result[key.Substring(1)] = val;
+                        var paramName = param.Substring(1).Trim().ToLowerInvariant();
+                        var paramValue = paramsQ.Dequeue();
+                        result[paramName] = paramValue;
+                    }
+                    else if (param.StartsWith("/"))
+                    {
+                        var paramName = param.Substring(1).Trim().ToLowerInvariant();
+                        result[paramName] = "true";
                     }
                 }
+                return result;
             }
-            return result;
+            catch (InvalidOperationException)
+            {
+                return null;
+            }          
         }
     }
 }

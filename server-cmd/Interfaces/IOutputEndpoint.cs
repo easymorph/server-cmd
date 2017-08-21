@@ -11,5 +11,7 @@ namespace MorphCmd.Interfaces
         void WriteInfo(string s);
         void WriteError(string s);
         bool IsOutputRedirected { get; }
+        void WriteSymbols(string s);
+        void Write(StringBuilder sb);
     }
 }

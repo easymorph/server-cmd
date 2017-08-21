@@ -38,4 +38,13 @@ namespace MorphSDK.Exceptions
             
         }
     }
+
+    public class MorphApiNotFountException : MorphClientGeneralException
+    {
+
+        public MorphApiNotFountException(string message) : base("NotFound", message)
+        {
+
+        }
+    }
 }
