@@ -217,8 +217,7 @@ namespace MorphSDK.Client
 
         public async Task DownloadFileAsync(string spaceName, string path, Func<DownloadFileInfo, bool> handleFile, Stream streamToWriteTo, CancellationToken cancellationToken)
         {
-            if (path != null)
-                path = path.Trim('/');
+            path = PreparePath(path);
             var url = string.Format("space/{0}/files/{1}", spaceName ?? _defaultSpaceName, path);
             // it's necessary to add HttpCompletionOption.ResponseHeadersRead to disable caching
             using (HttpResponseMessage response = await GetHttpClient().GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
@@ -280,7 +279,7 @@ namespace MorphSDK.Client
 
         }
 
-        public async Task UploadNewFileAsync(string spaceName, string filePath, string dest, CancellationToken cancellationToken)
+        public async Task UploadFile(string spaceName, string filePath, string dest, CancellationToken cancellationToken)
         {
             await InternalUploadFileAsync(spaceName, filePath, dest, cancellationToken, overrideFile: false);
         }
@@ -296,8 +295,7 @@ namespace MorphSDK.Client
             try
             {
                 string boundary = "EasyMorphCommandClient--------" + Guid.NewGuid().ToString("N");
-                if (dest != null)
-                    dest = dest.Trim('/');
+                dest = PreparePath(dest);
                 string url = string.Format("space/{0}/files/{1}", spaceName ?? _defaultSpaceName, dest);
                 //var cts = new CancellationTokenSource();
                 using (var content = new MultipartFormDataContent(boundary))
@@ -312,14 +310,15 @@ namespace MorphSDK.Client
                         using (var streamContent = new ProgressStreamContent(fsSource, downloadProgress))
                         {
                             content.Add(streamContent, "files", Path.GetFileName(filePath));
-                            using (var requestMessage = new HttpRequestMessage()
+                            var requestMessage = new HttpRequestMessage()
                             {
                                 Content = content,
                                 Method = overrideFile ? HttpMethod.Put : HttpMethod.Post,
                                 RequestUri = new Uri(url, UriKind.Relative)
-                            })
+                            };
+                            using (requestMessage)
                             {
-                                using (var response = await GetHttpClient().SendAsync(requestMessage, cancellationToken))
+                                using (var response = await GetHttpClient().SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
                                 {
                                     await HandleResponse(response);
                                 }
@@ -350,8 +349,7 @@ namespace MorphSDK.Client
 
         public async Task<SpaceBrowsingInfo> BrowseSpace(string spaceName, string folder, CancellationToken cancellationToken)
         {
-            if (folder != null)
-                folder = folder.Trim('/');
+            folder = PreparePath(folder);
 
             var url = string.Format("space/{0}/browse/{1}", spaceName ?? _defaultSpaceName, folder);
             using (var response = await GetHttpClient().GetAsync(url, cancellationToken))
@@ -360,6 +358,37 @@ namespace MorphSDK.Client
                 return SpaceBrowsingMapper.MapFromDto(dto);
 
             }
+        }
+
+        public async Task<bool> IsFileExists(string spaceName, string serverFolder, string fileName, CancellationToken cancellationToken)
+        {
+            serverFolder = PreparePath(serverFolder);
+            string path = PreparePath(serverFolder + "/" + fileName);
+            var url = string.Format("space/{0}/files/{1}", spaceName ?? _defaultSpaceName, path);
+            try
+            {
+                using (var requestMessage = new HttpRequestMessage()
+                {
+                    Method = HttpMethod.Head,
+                    RequestUri = new Uri(url, UriKind.Relative)
+                })
+                using (HttpResponseMessage response = await GetHttpClient().SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
+                {
+                    await HandleResponse(response);
+                }
+            }
+            catch (MorphApiNotFountException)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+
+        private string PreparePath(string urlPath)
+        {
+            return urlPath?.Replace('\\', '/')?.Trim('/');
         }
     }
 

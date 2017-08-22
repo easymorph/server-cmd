@@ -127,7 +127,8 @@ namespace MorphCmd.BL
             _apiClient.FileProgress += (object sender, FileEventArgs e) =>
             {
                 if (e.State == FileProgressState.Starting)
-                {   progress = new ProgressBar(_output, 40);
+                {
+                    progress = new ProgressBar(_output, 40);
                     progress.Init();
                 }
                 else if (e.State == FileProgressState.Processing)
@@ -151,15 +152,13 @@ namespace MorphCmd.BL
             }
             else
             {
-                try
-                {
-                    await _apiClient.UploadNewFileAsync(parameters.Space, parameters.From, parameters.To, _cancellationTokenSource.Token);
-                }
-                catch (MorphApiConflictException conflict)
+                                
+                var fileExists = await _apiClient.IsFileExists(parameters.Space,parameters.To, Path.GetFileName(parameters.From), _cancellationTokenSource.Token);
+                if (fileExists)
                 {
                     if (_output.IsOutputRedirected)
                     {
-                        _output.WriteError(string.Format("Unable to upload file '{0}' due to {1}. Use /y to override it ", parameters.To, conflict.Message));
+                        _output.WriteError(string.Format("Unable to upload file '{0}' due to file already exists. Use /y to override it ", parameters.To));
                     }
                     else
                     {
@@ -168,7 +167,7 @@ namespace MorphCmd.BL
                         var answer = _input.ReadLine();
                         if (answer.Trim().ToLowerInvariant().StartsWith("y"))
                         {
-                            _output.WriteInfo("Overriding file...");
+                            _output.WriteInfo("Uploading file...");
                             await _apiClient.UpdateFileAsync(parameters.Space, parameters.From, parameters.To, _cancellationTokenSource.Token);
                             _output.WriteInfo("Operation complete");
                         }
@@ -178,10 +177,14 @@ namespace MorphCmd.BL
                         }
                     }
                 }
-                catch(Exception ex)
+                else
                 {
-                    throw;
+                    await _apiClient.UploadFile(parameters.Space, parameters.From, parameters.To, _cancellationTokenSource.Token);
                 }
+
+
+
+
             }
         }
 
