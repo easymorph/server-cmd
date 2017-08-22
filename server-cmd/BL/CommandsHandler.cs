@@ -152,8 +152,8 @@ namespace MorphCmd.BL
             }
             else
             {
-                                
-                var fileExists = await _apiClient.IsFileExists(parameters.Space,parameters.To, Path.GetFileName(parameters.From), _cancellationTokenSource.Token);
+
+                var fileExists = await _apiClient.IsFileExists(parameters.Space, parameters.To, Path.GetFileName(parameters.From), _cancellationTokenSource.Token);
                 if (fileExists)
                 {
                     if (_output.IsOutputRedirected)
@@ -328,7 +328,7 @@ namespace MorphCmd.BL
                 Guid guid;
                 if (!Guid.TryParse(paramsDict["taskid"], out guid))
                 {
-                    _output.WriteError("The taskId is malformed. Expected: GUID like '-taskId 8de5b50a-2d65-44f4-9e86-660c2408fb06'");
+                    _output.WriteError("The taskId is malformed. Expected: GUID like '8de5b50a-2d65-44f4-9e86-660c2408fb06'");
                     return null;
                 }
                 parameters.TaskId = guid;
@@ -339,9 +339,14 @@ namespace MorphCmd.BL
         }
 
 
-        public async Task Handle(string command, Dictionary<string, string> paramsDict)
+        public async Task<bool> Handle(string command, Dictionary<string, string> paramsDict)
         {
             var parameters = ExtractParameters(command, paramsDict);
+            if (parameters == null)
+            {
+                _output.WriteError("Unable to extract parameters. Exiting...");
+                return false;
+            }
 
             try
             {
@@ -365,19 +370,37 @@ namespace MorphCmd.BL
                     case "download":
                         await DownloadFile(parameters);
                         break;
+                    default:
+                        _output.WriteInfo("Supported commands: run, runasync, status, upload, browse, download");
+                        break;
 
                 }
+                return true;
             }
             catch (AggregateException agr)
             {
                 foreach (var e in agr.InnerExceptions)
                 {
-                    _output.WriteError("An error occured " + e.Message);
+                    _output.WriteError(e.Message);
                 }
+                return false;
             }
             catch (Exception ex)
             {
-                _output.WriteError("An error occured " + ex.Message);
+                Exception inner = ex.InnerException;
+                if (inner != null)
+                {
+                    while (inner.InnerException != null)
+                    {
+                        inner = inner.InnerException;
+                    }
+                }
+                _output.WriteError(ex.Message);
+                if (inner != null)
+                {
+                    _output.WriteError(inner.Message);
+                }
+                return false;
             }
 
 
