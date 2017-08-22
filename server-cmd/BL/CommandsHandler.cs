@@ -40,17 +40,16 @@ namespace MorphCmd.BL
                 _output.WriteInfo("RUN usage sample: ems-cmd run http://10.20.30.40:6330 -space Default -taskID 8de5b50a-2d65-44f4-9e86-660c2408fb06");
                 return;
             }
-            _output.WriteInfo("Starting task " + parameters.TaskId.Value.ToString("D") + " in the space ..." + parameters.Space);
+            _output.WriteInfo("Attempting to start task " + parameters.TaskId.Value.ToString("D"));
             await _apiClient.StartTaskAsync(parameters.Space, parameters.TaskId.Value, _cancellationTokenSource.Token);
-            _output.WriteInfo("Task started. Waiting until done.");
+            //todo: get project name from StartTaskAsync
+            _output.WriteInfo("Project 'wait.morph' is running. Waiting until done.");
             do
-            {
-                _output.WriteSymbols(".");
+            {                
                 await Task.Delay(TimeSpan.FromSeconds(1));
-
             }
             while ((await _apiClient.GetRunningTaskStatusAsync(parameters.Space, parameters.TaskId.Value, _cancellationTokenSource.Token)).IsRunning);
-            _output.WriteInfo(string.Format("\nTask '{0}' completed", parameters.TaskId.Value.ToString("D")));
+            _output.WriteInfo(string.Format("\nTask {0} completed", parameters.TaskId.Value.ToString("D")));
         }
 
 
@@ -62,30 +61,35 @@ namespace MorphCmd.BL
                 _output.WriteInfo("RUNASYNC usage sample: ems-cmd run http://10.20.30.40:6330 -space Default -taskID 8de5b50a-2d65-44f4-9e86-660c2408fb06");
                 return;
             }
-            _output.WriteInfo("Starting task " + parameters.TaskId.Value.ToString("D") + " in the space ..." + parameters.Space);
+            _output.WriteInfo("Attempting to start task " + parameters.TaskId.Value.ToString("D") );
             await _apiClient.StartTaskAsync(parameters.Space, parameters.TaskId.Value, _cancellationTokenSource.Token);
-            _output.WriteInfo("Task started. Details are available in the Task log");
+            //todo: get project name from StartTaskAsync
+            _output.WriteInfo("Project 'wait.morph' is running.");
 
         }
 
         protected async Task Browse(Parameters parameters)
         {
+
             if (string.IsNullOrWhiteSpace(parameters.Location))
             {
-                _output.WriteError("Wrong command format");
-                _output.WriteInfo("BROWSE usage sample: ems-cmd browse http://10.20.30.40:6330 -space Default -location  \"\\\" ");
-                return;
+                _output.WriteInfo("Browsing the root folder of the space " + parameters.Space);
             }
-            _output.WriteInfo("Browsing folder " + parameters.Location + " in the space ..." + parameters.Space);
+            else
+            {
+                _output.WriteInfo("Browsing the folder '" + parameters.Location + "' of the space " + parameters.Space);
+            }
             var data = await _apiClient.BrowseSpace(parameters.Space, parameters.Location, _cancellationTokenSource.Token);
             foreach (var folder in data.Folders)
             {
-                _output.WriteInfo(string.Format("FOLDER '{0}'", folder.Name));
+                _output.WriteInfo(string.Format("{0}{1} {2}", folder.LastModified.ToLocalTime().ToString("MM/dd/yyyy hh:mm:ss tt").PadRight(30), "<DIR>".PadRight(16), folder.Name));
             }
             foreach (var file in data.Files)
             {
-                _output.WriteInfo(string.Format("FILE '{0}'; SIZE {1}", file.Name, file.FileSizeBytes));
+                _output.WriteInfo(string.Format("{0}{1} {2}", file.LastModified.ToLocalTime().ToString("MM/dd/yyyy hh:mm:ss tt").PadRight(30), file.FileSizeBytes.ToString("n0").PadLeft(16), file.Name));
             }
+
+
             _output.WriteInfo("Listing done");
 
 
@@ -108,13 +112,16 @@ namespace MorphCmd.BL
                 _output.WriteInfo("UPLOAD usage sample: ems-cmd upload http://10.20.30.40:6330 -space Default  -from \"C:\\Users\\Public\\Documents\\Morphs\\sample.morph\" -to \"folder 1\"");
                 return;
             }
-
+            
             if (string.IsNullOrWhiteSpace(parameters.To))
             {
-                _output.WriteInfo("Parameter -to was omited. Using default value '/'");
+                _output.WriteInfo(string.Format("Uploading file '{0}' to the root folder of space '{1}'...", parameters.From, parameters.Space??"Default"));
             }
-
-            _output.WriteInfo(string.Format("Uploading file '{0}' to folder '{1}' in a space '{2}'...", parameters.From, parameters.To, parameters.Space));
+            else
+            {
+                _output.WriteInfo(string.Format("Uploading file '{0}' to folder '{1}' of space '{2}'...", parameters.From, parameters.To, parameters.Space ?? "Default"));
+            }
+            
             if (!System.IO.File.Exists(parameters.From))
             {
                 _output.WriteError(string.Format("File '{0} not exists.'", parameters.From));
@@ -162,7 +169,7 @@ namespace MorphCmd.BL
                     }
                     else
                     {
-                        _output.WriteInfo("Uploading file already exists. Would you like to override it? (Y)es/No");
+                        _output.WriteInfo("Uploading file already exists. Would you like to override it? Y/N");
                         _output.WriteInfo("You may pass /y parameter to override file without any questions");
                         var answer = _input.ReadLine();
                         if (answer.Trim().ToLowerInvariant().StartsWith("y"))
@@ -186,6 +193,19 @@ namespace MorphCmd.BL
 
 
             }
+        }
+
+
+        protected async Task DeleteFile(Parameters parameters)
+        {
+            if (string.IsNullOrWhiteSpace(parameters.File))
+            {
+                _output.WriteError("Wrong command format");
+                Console.WriteLine("DEL usage sample: ems-cmd del http://10.20.30.40:6330 -space Default -location \"folder 1\" -file \"sample.txt\" ");
+                return;
+            }
+            await _apiClient.DeleteFile(parameters.Space, parameters.Location, parameters.File, _cancellationTokenSource.Token);
+
         }
 
         protected async Task DownloadFile(Parameters parameters)
@@ -252,7 +272,7 @@ namespace MorphCmd.BL
                         allowLoading = false;
                         if (!_output.IsOutputRedirected)
                         {
-                            _output.WriteInfo(string.Format("Destination file '{0}' already exists. Would you like to override it? (Y)es/No", destFileName));
+                            _output.WriteInfo(string.Format("Destination file '{0}' already exists. Would you like to override it? Y/N", destFileName));
                             _output.WriteInfo("You may pass /y parameter to override file without any questions");
                             var answer = _input.ReadLine();
                             if (answer.Trim().ToLowerInvariant().StartsWith("y"))
@@ -321,6 +341,8 @@ namespace MorphCmd.BL
                 parameters.To = paramsDict["to"];
             if (paramsDict.ContainsKey("location"))
                 parameters.Location = paramsDict["location"];
+            if (paramsDict.ContainsKey("file"))
+                parameters.File = paramsDict["file"];
             if (paramsDict.ContainsKey("y"))
                 parameters.YesToAll = true;
             if (paramsDict.ContainsKey("taskid"))
@@ -366,6 +388,9 @@ namespace MorphCmd.BL
                         break;
                     case "browse":
                         await Browse(parameters);
+                        break;
+                    case "del":
+                        await DeleteFile(parameters);
                         break;
                     case "download":
                         await DownloadFile(parameters);

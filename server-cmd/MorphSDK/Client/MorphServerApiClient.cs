@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Net;
 using MorphSDK.Events;
+using System.Collections.Specialized;
 
 namespace MorphSDK.Client
 {
@@ -59,6 +60,14 @@ namespace MorphSDK.Client
             client.DefaultRequestHeaders.Add("User-Agent", UserAgent);
             client.DefaultRequestHeaders.Add("X-Client-Type", "EMS-CMD");
             client.MaxResponseContentBufferSize = 100 * 1024;
+            client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
+                {
+                    NoCache = true,                    
+                    NoStore = true                    
+                };
+            
+
+
             client.Timeout = TimeSpan.FromMinutes(5);
 
             return client;
@@ -161,7 +170,10 @@ namespace MorphSDK.Client
         /// <returns></returns>
         public async Task<RunningTaskStatus> GetRunningTaskStatusAsync(string spaceName, Guid taskId, CancellationToken cancellationToken)
         {
-            var url = "runningjobs/" + taskId.ToString("D");
+            var nvc = new NameValueCollection();
+            nvc.Add("_", DateTime.Now.Ticks.ToString());
+            var url = string.Format("runningjobs/{0}{1}", taskId.ToString("D"), nvc.ToQueryString());
+
             using (var response = await GetHttpClient().GetAsync(url, cancellationToken))
             {
                 var info = await HandleResponse<RunningTaskStatusDto>(response);
@@ -194,7 +206,10 @@ namespace MorphSDK.Client
         /// <returns></returns>
         public async Task<ServerStatus> GetServerStatusAsync(CancellationToken cancellationToken)
         {
-            var url = "server/status";
+            var nvc = new NameValueCollection();
+            nvc.Add("_", DateTime.Now.Ticks.ToString());
+
+            var url = "server/status" + nvc.ToQueryString();
             using (var response = await GetHttpClient().GetAsync(url, cancellationToken))
             {
                 var dto = await HandleResponse<ServerStatusDto>(response);
@@ -217,8 +232,10 @@ namespace MorphSDK.Client
 
         public async Task DownloadFileAsync(string spaceName, string path, Func<DownloadFileInfo, bool> handleFile, Stream streamToWriteTo, CancellationToken cancellationToken)
         {
+            var nvc = new NameValueCollection();
+            nvc.Add("_", DateTime.Now.Ticks.ToString());
             path = PreparePath(path);
-            var url = string.Format("space/{0}/files/{1}", spaceName ?? _defaultSpaceName, path);
+            var url = string.Format("space/{0}/files/{1}{2}", spaceName ?? _defaultSpaceName, path,nvc.ToQueryString());
             // it's necessary to add HttpCompletionOption.ResponseHeadersRead to disable caching
             using (HttpResponseMessage response = await GetHttpClient().GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
                 if (response.IsSuccessStatusCode)
@@ -350,8 +367,10 @@ namespace MorphSDK.Client
         public async Task<SpaceBrowsingInfo> BrowseSpace(string spaceName, string folder, CancellationToken cancellationToken)
         {
             folder = PreparePath(folder);
+            var nvc = new NameValueCollection();
+            nvc.Add("_", DateTime.Now.Ticks.ToString());            
 
-            var url = string.Format("space/{0}/browse/{1}", spaceName ?? _defaultSpaceName, folder);
+            var url = string.Format("space/{0}/browse/{1}{2}", spaceName ?? _defaultSpaceName, folder, nvc.ToQueryString());
             using (var response = await GetHttpClient().GetAsync(url, cancellationToken))
             {
                 var dto = await HandleResponse<SpaceBrowsingResponseDto>(response);
@@ -389,6 +408,19 @@ namespace MorphSDK.Client
         private string PreparePath(string urlPath)
         {
             return urlPath?.Replace('\\', '/')?.Trim('/');
+        }
+
+        public async Task DeleteFile(string spaceName, string serverFolder, string fileName, CancellationToken cancellationToken)
+        {
+            serverFolder = PreparePath(serverFolder);
+            string path = PreparePath(serverFolder + "/" + fileName);
+            var url = string.Format("space/{0}/files/{1}", spaceName ?? _defaultSpaceName, path);
+
+            using (HttpResponseMessage response = await GetHttpClient().DeleteAsync(url, cancellationToken))
+            {
+                await HandleResponse(response);
+            }
+
         }
     }
 

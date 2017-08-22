@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MorphCmd</RootNamespace>
-    <AssemblyName>server-cmd</AssemblyName>
+    <AssemblyName>ems-cmd</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -37,6 +37,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -65,6 +66,7 @@
     <Compile Include="MorphSDK\Helper\FileProgress.cs" />
     <Compile Include="MorphSDK\Helper\ProgressStreamContent.cs" />
     <Compile Include="MorphSDK\Helper\IFileProgress.cs" />
+    <Compile Include="MorphSDK\Helper\QueryBuilder.cs" />
     <Compile Include="MorphSDK\Helper\SpaceBrowsingMapper.cs" />
     <Compile Include="MorphSDK\Model\DownloadFileInfo.cs" />
     <Compile Include="MorphSDK\Model\FileProgressState.cs" />

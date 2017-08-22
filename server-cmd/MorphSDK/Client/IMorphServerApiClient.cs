@@ -17,6 +17,7 @@ namespace MorphSDK.Client
         Task StartTaskAsync(string spaceName, Guid taskId, CancellationToken cancellationToken);
         Task StopTaskAsync(string spaceName, Guid taskId, CancellationToken cancellationToken);
         Task UploadFile(string spaceName, string localFilePath, string destServerFolder, CancellationToken cancellationToken);
+        Task DeleteFile(string spaceName, string serverFolder, string fileName, CancellationToken cancellationToken);
         Task<bool> IsFileExists(string spaceName, string serverFolder, string fileName, CancellationToken cancellationToken);
         Task<SpaceBrowsingInfo> BrowseSpace(string spaceName, string folder, CancellationToken cancellationToken);
         event EventHandler<FileEventArgs> FileProgress;
