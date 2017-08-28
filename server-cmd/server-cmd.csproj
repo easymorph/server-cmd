@@ -46,10 +46,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BL\CommandsHandler.cs" />
-    <Compile Include="BL\ConsoleInput.cs" />
-    <Compile Include="BL\ConsoleOutput.cs" />
-    <Compile Include="BL\FileExistsException.cs" />
+    <Compile Include="BusinessLogic\CommandsHandler.cs" />
+    <Compile Include="BusinessLogic\ConsoleInput.cs" />
+    <Compile Include="BusinessLogic\ConsoleOutput.cs" />
+    <Compile Include="BusinessLogic\FileExistsException.cs" />
     <Compile Include="Interfaces\IInputEndpoint.cs" />
     <Compile Include="Models\Parameters.cs" />
     <Compile Include="MorphSDK\Client\IMorphServerApiClient.cs" />

@@ -56,7 +56,10 @@ namespace MorphSDK.Client
 
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
+                new MediaTypeWithQualityHeaderValue("application/json")
+                {
+                    CharSet = "utf-8"
+                });
             client.DefaultRequestHeaders.Add("User-Agent", UserAgent);
             client.DefaultRequestHeaders.Add("X-Client-Type", "EMS-CMD");
             client.MaxResponseContentBufferSize = 100 * 1024;
@@ -68,7 +71,7 @@ namespace MorphSDK.Client
             
 
 
-            client.Timeout = TimeSpan.FromMinutes(5);
+            client.Timeout = TimeSpan.FromMinutes(15);
 
             return client;
         }
@@ -124,7 +127,8 @@ namespace MorphSDK.Client
                         switch (errorResponse.error.code)
                         {
                             case ReadableErrorTopCode.Conflict: throw new MorphApiConflictException(errorResponse.error.message);
-                            case ReadableErrorTopCode.NotFound: throw new MorphApiNotFountException(errorResponse.error.message);
+                            case ReadableErrorTopCode.NotFound: throw new MorphApiNotFoundException(errorResponse.error.message);
+                            case ReadableErrorTopCode.Forbidden: throw new MorphApiForbiddenException(errorResponse.error.message);
                         }
 
                         throw new MorphClientGeneralException(errorResponse.error.code, errorResponse.error.message);
@@ -139,8 +143,9 @@ namespace MorphSDK.Client
                 //todo: analize response.StatusCode
                 switch (response.StatusCode)
                 {
-                    case HttpStatusCode.Conflict: throw new MorphApiConflictException(response.ReasonPhrase);
-                    case HttpStatusCode.NotFound: throw new MorphApiNotFountException(response.ReasonPhrase ?? "Not found");
+                    case HttpStatusCode.Conflict: throw new MorphApiConflictException(response.ReasonPhrase ?? "Conflict");
+                    case HttpStatusCode.NotFound: throw new MorphApiNotFoundException(response.ReasonPhrase ?? "Not found");
+                    case HttpStatusCode.Forbidden: throw new MorphApiForbiddenException(response.ReasonPhrase ?? "Forbidden");
                 }
                 throw new MorphClientCommunicationException(response.ReasonPhrase);
             }
@@ -152,12 +157,18 @@ namespace MorphSDK.Client
         /// <param name="spaceName">space name</param>
         /// <param name="taskId">tast guid</param>
         /// <returns></returns>
-        public async Task StartTaskAsync(string spaceName, Guid taskId, CancellationToken cancellationToken)
+        public async Task<RunningTaskStatus> StartTaskAsync(string spaceName, Guid taskId, CancellationToken cancellationToken)
         {
-            var url = "runningjobs/" + taskId.ToString("D");
+            var url = "runningtasks/" + taskId.ToString("D");
             using (var response = await GetHttpClient().PostAsync(url, null, cancellationToken))
             {
-                await HandleResponse(response);
+                var info = await HandleResponse<RunningTaskStatusDto>(response);
+                return new RunningTaskStatus
+                {
+                    Id = Guid.Parse(info.Id),
+                    IsRunning = info.IsRunning,
+                    ProjectName = info.ProjectName
+                };
             }
 
         }
@@ -172,7 +183,7 @@ namespace MorphSDK.Client
         {
             var nvc = new NameValueCollection();
             nvc.Add("_", DateTime.Now.Ticks.ToString());
-            var url = string.Format("runningjobs/{0}{1}", taskId.ToString("D"), nvc.ToQueryString());
+            var url = string.Format("runningtasks/{0}{1}", taskId.ToString("D"), nvc.ToQueryString());
 
             using (var response = await GetHttpClient().GetAsync(url, cancellationToken))
             {
@@ -180,7 +191,8 @@ namespace MorphSDK.Client
                 return new RunningTaskStatus
                 {
                     Id = Guid.Parse(info.Id),
-                    IsRunning = info.IsRunning
+                    IsRunning = info.IsRunning,
+                    ProjectName = info.ProjectName
                 };
             }
         }
@@ -193,7 +205,7 @@ namespace MorphSDK.Client
         /// <returns></returns>
         public async Task StopTaskAsync(string spaceName, Guid taskId, CancellationToken cancellationToken)
         {
-            var url = "runningjobs/" + taskId.ToString("D");
+            var url = "runningtasks/" + taskId.ToString("D");
             using (var response = await GetHttpClient().DeleteAsync(url, cancellationToken))
             {
                 await HandleResponse(response);
@@ -296,7 +308,7 @@ namespace MorphSDK.Client
 
         }
 
-        public async Task UploadFile(string spaceName, string filePath, string dest, CancellationToken cancellationToken)
+        public async Task UploadFileAsync(string spaceName, string filePath, string dest, CancellationToken cancellationToken)
         {
             await InternalUploadFileAsync(spaceName, filePath, dest, cancellationToken, overrideFile: false);
         }
@@ -350,7 +362,7 @@ namespace MorphSDK.Client
             {
                 var einner = ex.InnerException as WebException;
                 if (einner.Status == WebExceptionStatus.ConnectionClosed)
-                    throw new MorphApiNotFountException("Specified folder not found");
+                    throw new MorphApiNotFoundException("Specified folder not found");
 
             }
         }
@@ -364,7 +376,7 @@ namespace MorphSDK.Client
 
         }
 
-        public async Task<SpaceBrowsingInfo> BrowseSpace(string spaceName, string folder, CancellationToken cancellationToken)
+        public async Task<SpaceBrowsingInfo> BrowseSpaceAsync(string spaceName, string folder, CancellationToken cancellationToken)
         {
             folder = PreparePath(folder);
             var nvc = new NameValueCollection();
@@ -379,7 +391,7 @@ namespace MorphSDK.Client
             }
         }
 
-        public async Task<bool> IsFileExists(string spaceName, string serverFolder, string fileName, CancellationToken cancellationToken)
+        public async Task<bool> IsFileExistsAsync(string spaceName, string serverFolder, string fileName, CancellationToken cancellationToken)
         {
             serverFolder = PreparePath(serverFolder);
             string path = PreparePath(serverFolder + "/" + fileName);
@@ -396,7 +408,7 @@ namespace MorphSDK.Client
                     await HandleResponse(response);
                 }
             }
-            catch (MorphApiNotFountException)
+            catch (MorphApiNotFoundException)
             {
                 return false;
             }
@@ -410,7 +422,7 @@ namespace MorphSDK.Client
             return urlPath?.Replace('\\', '/')?.Trim('/');
         }
 
-        public async Task DeleteFile(string spaceName, string serverFolder, string fileName, CancellationToken cancellationToken)
+        public async Task DeleteFileAsync(string spaceName, string serverFolder, string fileName, CancellationToken cancellationToken)
         {
             serverFolder = PreparePath(serverFolder);
             string path = PreparePath(serverFolder + "/" + fileName);

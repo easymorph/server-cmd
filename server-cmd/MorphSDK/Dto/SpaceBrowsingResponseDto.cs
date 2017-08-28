@@ -14,11 +14,21 @@ namespace MorphSDK.Dto
         public List<SpaceFolderItemDto> Folders { get; set; }
         [DataMember(Name = "files")]
         public List<SpaceFileItemDto> Files { get; set; }
+        [DataMember(Name = "navigationChain")]
+        public List<SpaceNavigationItemDto> NavigationChain { get; set; }
+        [DataMember(Name = "freeSpaceBytes")]
+        public ulong FreeSpaceBytes { get; set; }
+        [DataMember(Name = "spaceAccess")]
+        public string SpaceAccess { get; set; }
+        [DataMember(Name = "spaceName")]
+        public string SpaceName { get; set; }        
+
 
         public SpaceBrowsingResponseDto()
         {
             Folders = new List<SpaceFolderItemDto>();
             Files = new List<SpaceFileItemDto>();
+            NavigationChain = new List<SpaceNavigationItemDto>();
         }
     }
 
@@ -43,5 +53,18 @@ namespace MorphSDK.Dto
         [DataMember(Name = "lastModified")]
         public string LastModified { get; set; }
 
+    }
+
+    [DataContract]
+    internal sealed class  SpaceNavigationItemDto
+    {
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+        [DataMember(Name = "path")]
+        public string Path { get; set; }
+        public SpaceNavigationItemDto()
+        {
+           
+        }
     }
 }

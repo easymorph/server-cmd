@@ -10,15 +10,18 @@ namespace MorphSDK.Model
     
     public sealed class SpaceBrowsingInfo
     {
-        
-        public List<SpaceFolderInfo> Folders { get; set; }
-        
+        public ulong FreeSpaceBytes { get; set; }
+        public string SpaceName { get; set; }
+
+        public List<SpaceFolderInfo> Folders { get; set; }        
         public List<SpaceFileInfo> Files { get; set; }
+        public List<SpaceNavigation> NavigationChain { get; set; }
 
         public SpaceBrowsingInfo()
         {
             Folders = new List<SpaceFolderInfo>();
             Files = new List<SpaceFileInfo>();
+            NavigationChain = new List<SpaceNavigation>();
         }
     }
 
@@ -32,7 +35,7 @@ namespace MorphSDK.Model
         
         public long FileSizeBytes { get; set; }
         
-        public DateTimeOffset LastModified { get; set; }
+        public DateTime LastModified { get; set; }
     }
 
     
@@ -41,7 +44,16 @@ namespace MorphSDK.Model
         
         public string Name { get; set; }
         
-        public DateTimeOffset LastModified { get; set; }
+        public DateTime LastModified { get; set; }
+
+    }
+
+    public sealed class SpaceNavigation
+    {
+
+        public string Name { get; set; }
+        public string Path { get; set; }
+
 
     }
 }

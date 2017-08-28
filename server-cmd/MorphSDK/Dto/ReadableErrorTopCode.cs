@@ -7,6 +7,7 @@
         public const string NotFound = "NotFound";
         public const string GeneralError = "GeneralError";
         public const string Conflict = "Conflict";
+        public const string Forbidden = "Forbidden";
 
     }
 }

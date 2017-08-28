@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MorphSDK.Dto;
+using System;
 
 namespace MorphSDK.Exceptions
 {
@@ -33,16 +34,24 @@ namespace MorphSDK.Exceptions
     public class MorphApiConflictException : MorphClientGeneralException
     {
         
-        public MorphApiConflictException(string message) : base("Conflict",message)
+        public MorphApiConflictException(string message) : base(ReadableErrorTopCode.Conflict, message)
         {
             
         }
     }
 
-    public class MorphApiNotFountException : MorphClientGeneralException
+    public class MorphApiNotFoundException : MorphClientGeneralException
     {
 
-        public MorphApiNotFountException(string message) : base("NotFound", message)
+        public MorphApiNotFoundException(string message) : base(ReadableErrorTopCode.NotFound, message)
+        {
+
+        }
+    }
+    public class MorphApiForbiddenException : MorphClientGeneralException
+    {
+
+        public MorphApiForbiddenException(string message) : base(ReadableErrorTopCode.Forbidden, message)
         {
 
         }

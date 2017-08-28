@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MorphSDK.Client;
 using MorphCmd.Utils;
-using MorphCmd.BL;
+using MorphCmd.BusinessLogic;
 
 namespace MorphCmd
 {

@@ -6,5 +6,6 @@ namespace MorphSDK.Model
     {
         public Guid Id { get; set; }
         public bool IsRunning { get; set; }
+        public string ProjectName { get; set; }
     }
 }

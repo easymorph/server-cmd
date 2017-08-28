@@ -14,5 +14,7 @@ namespace MorphSDK.Dto
         public string Id { get; set; }
         [DataMember(Name = "isRunning")]
         public bool IsRunning { get; set; }
+        [DataMember(Name = "projectName")]
+        public string ProjectName { get; set; }
     }
 }
