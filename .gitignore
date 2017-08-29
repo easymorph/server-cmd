@@ -1,3 +1,9 @@
 /server-cmd/.vs/server-cmd/v14
 /server-cmd/bin/Debug
 /server-cmd/obj/Debug
+/src/obj/Debug
+/src/bin/Debug
+/src/.vs/server-cmd/v14
+/src/.vs/ems-cmd/v15
+/.vs/server-cmd/v14
+/src/ems-cmd.csproj.user

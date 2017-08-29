@@ -16,7 +16,6 @@ namespace MorphSDK.Helper
 
         private Stream _stream;
         private int _bufSize;
-        private bool _consumed;
         private IFileProgress _fileProgress;
         private DateTime _lastUpdate = DateTime.MinValue;
 
