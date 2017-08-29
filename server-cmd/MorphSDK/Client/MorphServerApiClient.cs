@@ -64,11 +64,11 @@ namespace MorphSDK.Client
             client.DefaultRequestHeaders.Add("X-Client-Type", "EMS-CMD");
             client.MaxResponseContentBufferSize = 100 * 1024;
             client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
-                {
-                    NoCache = true,                    
-                    NoStore = true                    
-                };
-            
+            {
+                NoCache = true,
+                NoStore = true
+            };
+
 
 
             client.Timeout = TimeSpan.FromMinutes(15);
@@ -235,19 +235,19 @@ namespace MorphSDK.Client
             }
         }
 
-        public async Task<DownloadFileInfo> DownloadFileAsync(string spaceName, string path, Stream streamToWriteTo, CancellationToken cancellationToken)
+        public async Task<DownloadFileInfo> DownloadFileAsync(string spaceName, string remoteFolderPath, Stream streamToWriteTo, CancellationToken cancellationToken)
         {
             DownloadFileInfo fileInfo = null;
-            await DownloadFileAsync(spaceName, path, (fi) => { fileInfo = fi; return true; }, streamToWriteTo, cancellationToken);
+            await DownloadFileAsync(spaceName, remoteFolderPath, (fi) => { fileInfo = fi; return true; }, streamToWriteTo, cancellationToken);
             return fileInfo;
         }
 
-        public async Task DownloadFileAsync(string spaceName, string path, Func<DownloadFileInfo, bool> handleFile, Stream streamToWriteTo, CancellationToken cancellationToken)
+        public async Task DownloadFileAsync(string spaceName, string remoteFolderPath, Func<DownloadFileInfo, bool> handleFile, Stream streamToWriteTo, CancellationToken cancellationToken)
         {
             var nvc = new NameValueCollection();
             nvc.Add("_", DateTime.Now.Ticks.ToString());
-            path = PreparePath(path);
-            var url = string.Format("space/{0}/files/{1}{2}", spaceName ?? _defaultSpaceName, path,nvc.ToQueryString());
+            remoteFolderPath = PreparePath(remoteFolderPath);
+            var url = string.Format("space/{0}/files/{1}{2}", spaceName ?? _defaultSpaceName, remoteFolderPath, nvc.ToQueryString());
             // it's necessary to add HttpCompletionOption.ResponseHeadersRead to disable caching
             using (HttpResponseMessage response = await GetHttpClient().GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
                 if (response.IsSuccessStatusCode)
@@ -308,52 +308,51 @@ namespace MorphSDK.Client
 
         }
 
-        public async Task UploadFileAsync(string spaceName, string filePath, string dest, CancellationToken cancellationToken)
+        
+        public async Task UploadFileAsync(string spaceName, string localFilePath, string destFolderPath, CancellationToken cancellationToken, bool overrideFileifExists = false)
         {
-            await InternalUploadFileAsync(spaceName, filePath, dest, cancellationToken, overrideFile: false);
+            if (!File.Exists(localFilePath))
+                throw new FileNotFoundException(string.Format("File '{0}' not found", localFilePath));
+            var fileSize = new System.IO.FileInfo(localFilePath).Length;
+            var fileName = Path.GetFileName(localFilePath);
+            using (var fsSource = new FileStream(localFilePath, FileMode.Open, FileAccess.Read))
+            {
+                await UploadFileAsync(spaceName, fsSource, fileName, fileSize, destFolderPath, cancellationToken, overrideFileifExists);
+                return;
+            }
+
         }
 
-        public async Task UpdateFileAsync(string spaceName, string filePath, string dest, CancellationToken cancellationToken)
-        {
-            await InternalUploadFileAsync(spaceName, filePath, dest, cancellationToken, overrideFile: true);
-        }
-
-
-        protected async Task InternalUploadFileAsync(string spaceName, string filePath, string dest, CancellationToken cancellationToken, bool overrideFile)
+        public async Task UploadFileAsync(string spaceName, Stream inputStream, string fileName, long fileSize, string destFolderPath, CancellationToken cancellationToken, bool overrideFileifExists = false)
         {
             try
             {
                 string boundary = "EasyMorphCommandClient--------" + Guid.NewGuid().ToString("N");
-                dest = PreparePath(dest);
-                string url = string.Format("space/{0}/files/{1}", spaceName ?? _defaultSpaceName, dest);
+                destFolderPath = PreparePath(destFolderPath);
+                string url = string.Format("space/{0}/files/{1}", spaceName ?? _defaultSpaceName, destFolderPath);
                 //var cts = new CancellationTokenSource();
                 using (var content = new MultipartFormDataContent(boundary))
                 {
-                    var fileSize = new System.IO.FileInfo(filePath).Length;
-                    FileStream fsSource = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-
-                    using (fsSource)
+                    var downloadProgress = new FileProgress(fileName, fileSize);
+                    downloadProgress.StateChanged += DownloadProgress_StateChanged;
+                    using (var streamContent = new ProgressStreamContent(inputStream, downloadProgress))
                     {
-                        var downloadProgress = new FileProgress(filePath, fileSize);
-                        downloadProgress.StateChanged += DownloadProgress_StateChanged;
-                        using (var streamContent = new ProgressStreamContent(fsSource, downloadProgress))
+                        content.Add(streamContent, "files", Path.GetFileName(fileName));
+                        var requestMessage = new HttpRequestMessage()
                         {
-                            content.Add(streamContent, "files", Path.GetFileName(filePath));
-                            var requestMessage = new HttpRequestMessage()
+                            Content = content,
+                            Method = overrideFileifExists ? HttpMethod.Put : HttpMethod.Post,
+                            RequestUri = new Uri(url, UriKind.Relative)
+                        };
+                        using (requestMessage)
+                        {
+                            using (var response = await GetHttpClient().SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
                             {
-                                Content = content,
-                                Method = overrideFile ? HttpMethod.Put : HttpMethod.Post,
-                                RequestUri = new Uri(url, UriKind.Relative)
-                            };
-                            using (requestMessage)
-                            {
-                                using (var response = await GetHttpClient().SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
-                                {
-                                    await HandleResponse(response);
-                                }
+                                await HandleResponse(response);
                             }
-
                         }
+
+
                     }
                 }
             }
@@ -376,13 +375,13 @@ namespace MorphSDK.Client
 
         }
 
-        public async Task<SpaceBrowsingInfo> BrowseSpaceAsync(string spaceName, string folder, CancellationToken cancellationToken)
+        public async Task<SpaceBrowsingInfo> BrowseSpaceAsync(string spaceName, string folderPath, CancellationToken cancellationToken)
         {
-            folder = PreparePath(folder);
+            folderPath = PreparePath(folderPath);
             var nvc = new NameValueCollection();
-            nvc.Add("_", DateTime.Now.Ticks.ToString());            
+            nvc.Add("_", DateTime.Now.Ticks.ToString());
 
-            var url = string.Format("space/{0}/browse/{1}{2}", spaceName ?? _defaultSpaceName, folder, nvc.ToQueryString());
+            var url = string.Format("space/{0}/browse/{1}{2}", spaceName ?? _defaultSpaceName, folderPath, nvc.ToQueryString());
             using (var response = await GetHttpClient().GetAsync(url, cancellationToken))
             {
                 var dto = await HandleResponse<SpaceBrowsingResponseDto>(response);
