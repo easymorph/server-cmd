@@ -23,7 +23,7 @@ namespace MorphSDK.Client
         protected readonly string UserAgent = "MorphServerApiClient/0.1";
         protected HttpClient _httpClient;
         protected readonly string _api_v1 = "api/v1/";
-        protected readonly string _defaultSpaceName = "Default";
+        protected readonly string _defaultSpaceName = "default";
 
         public MorphServerApiClient(string apiHost)
         {
@@ -159,6 +159,7 @@ namespace MorphSDK.Client
         /// <returns></returns>
         public async Task<RunningTaskStatus> StartTaskAsync(string spaceName, Guid taskId, CancellationToken cancellationToken)
         {
+            spaceName = PrepareSpaceName(spaceName);
             var url = "runningtasks/" + taskId.ToString("D");
             using (var response = await GetHttpClient().PostAsync(url, null, cancellationToken))
             {
@@ -181,6 +182,7 @@ namespace MorphSDK.Client
         /// <returns></returns>
         public async Task<RunningTaskStatus> GetRunningTaskStatusAsync(string spaceName, Guid taskId, CancellationToken cancellationToken)
         {
+            spaceName = PrepareSpaceName(spaceName);
             var nvc = new NameValueCollection();
             nvc.Add("_", DateTime.Now.Ticks.ToString());
             var url = string.Format("runningtasks/{0}{1}", taskId.ToString("D"), nvc.ToQueryString());
@@ -205,6 +207,7 @@ namespace MorphSDK.Client
         /// <returns></returns>
         public async Task StopTaskAsync(string spaceName, Guid taskId, CancellationToken cancellationToken)
         {
+            spaceName = PrepareSpaceName(spaceName);
             var url = "runningtasks/" + taskId.ToString("D");
             using (var response = await GetHttpClient().DeleteAsync(url, cancellationToken))
             {
@@ -244,10 +247,10 @@ namespace MorphSDK.Client
 
         public async Task DownloadFileAsync(string spaceName, string remoteFolderPath, Func<DownloadFileInfo, bool> handleFile, Stream streamToWriteTo, CancellationToken cancellationToken)
         {
+            spaceName = PrepareSpaceName(spaceName);
             var nvc = new NameValueCollection();
             nvc.Add("_", DateTime.Now.Ticks.ToString());
-            remoteFolderPath = PreparePath(remoteFolderPath);
-            var url = string.Format("space/{0}/files/{1}{2}", spaceName ?? _defaultSpaceName, remoteFolderPath, nvc.ToQueryString());
+            var url = JoinUrl("space", spaceName, "files", remoteFolderPath) + nvc.ToQueryString();
             // it's necessary to add HttpCompletionOption.ResponseHeadersRead to disable caching
             using (HttpResponseMessage response = await GetHttpClient().GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
                 if (response.IsSuccessStatusCode)
@@ -308,7 +311,7 @@ namespace MorphSDK.Client
 
         }
 
-        
+
         public async Task UploadFileAsync(string spaceName, string localFilePath, string destFolderPath, CancellationToken cancellationToken, bool overrideFileifExists = false)
         {
             if (!File.Exists(localFilePath))
@@ -327,10 +330,10 @@ namespace MorphSDK.Client
         {
             try
             {
+                spaceName = PrepareSpaceName(spaceName);
                 string boundary = "EasyMorphCommandClient--------" + Guid.NewGuid().ToString("N");
-                destFolderPath = PreparePath(destFolderPath);
-                string url = string.Format("space/{0}/files/{1}", spaceName ?? _defaultSpaceName, destFolderPath);
-                //var cts = new CancellationTokenSource();
+                string url = JoinUrl("space", spaceName, "files", destFolderPath);
+
                 using (var content = new MultipartFormDataContent(boundary))
                 {
                     var downloadProgress = new FileProgress(fileName, fileSize);
@@ -377,11 +380,11 @@ namespace MorphSDK.Client
 
         public async Task<SpaceBrowsingInfo> BrowseSpaceAsync(string spaceName, string folderPath, CancellationToken cancellationToken)
         {
-            folderPath = PreparePath(folderPath);
+            spaceName = PrepareSpaceName(spaceName);
             var nvc = new NameValueCollection();
             nvc.Add("_", DateTime.Now.Ticks.ToString());
 
-            var url = string.Format("space/{0}/browse/{1}{2}", spaceName ?? _defaultSpaceName, folderPath, nvc.ToQueryString());
+            var url = JoinUrl("space", spaceName, "browse", folderPath) + nvc.ToQueryString();
             using (var response = await GetHttpClient().GetAsync(url, cancellationToken))
             {
                 var dto = await HandleResponse<SpaceBrowsingResponseDto>(response);
@@ -392,9 +395,8 @@ namespace MorphSDK.Client
 
         public async Task<bool> IsFileExistsAsync(string spaceName, string serverFolder, string fileName, CancellationToken cancellationToken)
         {
-            serverFolder = PreparePath(serverFolder);
-            string path = PreparePath(serverFolder + "/" + fileName);
-            var url = string.Format("space/{0}/files/{1}", spaceName ?? _defaultSpaceName, path);
+            spaceName = PrepareSpaceName(spaceName);
+            var url = JoinUrl("space", spaceName, "files", serverFolder, fileName);
             try
             {
                 using (var requestMessage = new HttpRequestMessage()
@@ -416,16 +418,39 @@ namespace MorphSDK.Client
         }
 
 
-        private string PreparePath(string urlPath)
+
+        private string PrepareSpaceName(string spaceName)
         {
-            return urlPath?.Replace('\\', '/')?.Trim('/');
+            return string.IsNullOrWhiteSpace(spaceName) ? _defaultSpaceName : spaceName.ToLower();
+        }
+
+        private string JoinUrl(params string[] urls)
+        {
+            var result = string.Empty;
+            for (var i = 0; i < urls.Length; i++)
+            {
+                var p = urls[i];
+                if (p == null)
+                    continue;
+
+                p = p.Replace('\\', '/');
+                p = p.Trim(new[] { '/' });
+                if (string.IsNullOrWhiteSpace(p))
+                    continue;
+
+                if (result != string.Empty)
+                    result += "/";
+                result += p;
+
+            }
+            return result;
         }
 
         public async Task DeleteFileAsync(string spaceName, string serverFolder, string fileName, CancellationToken cancellationToken)
         {
-            serverFolder = PreparePath(serverFolder);
-            string path = PreparePath(serverFolder + "/" + fileName);
-            var url = string.Format("space/{0}/files/{1}", spaceName ?? _defaultSpaceName, path);
+
+            spaceName = PrepareSpaceName(spaceName);
+            var url = JoinUrl("space", spaceName, "files", serverFolder, fileName);
 
             using (HttpResponseMessage response = await GetHttpClient().DeleteAsync(url, cancellationToken))
             {
