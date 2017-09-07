@@ -97,6 +97,23 @@ namespace MorphSDK.Client
         /// <returns></returns>
         Task UploadFileAsync(string spaceName, string localFilePath, string destFolderPath, CancellationToken cancellationToken, bool overrideFileifExists = false);
 
+
+        /// <summary>
+        /// Validate tasks. Checks that there are no excess parameters in the created tasks. Raises <see cref="MorphSDK.Exceptions.MorphApiCommandFailedException{MorphSDK.Model.Errors.ValidateTasksError}"/> 
+        /// where T is <see cref="MorphSDK.Model.Errors.ValidateTasksError"/> in case of validation errors
+        /// </summary>
+        /// <param name="spaceName">space name</param>
+        /// <param name="projectPath">path to the morph project file</param>
+        /// <exception cref="MorphSDK.Exceptions.MorphApiCommandFailedException{TDetail}">Thrown when validation fails. See more info in exception Details property</exception>
+        /// <strong>TDetail</strong> may be typed as:
+        /// <para>
+        /// <see cref="MorphSDK.Model.Errors.ValidateTasksError"/>
+        /// </para>
+        /// <exception cref="MorphSDK.Exceptions.MorphApiBadArgumentException">Thrown when bad arguments were passed</exception>
+        /// <returns></returns>
+        Task ValidateTasksAsync(string spaceName, string projectPath, CancellationToken cancellationToken);
+
+
         event EventHandler<FileEventArgs> FileProgress;
     }
 }

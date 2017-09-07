@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MorphSDK.Dto.Commands;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 namespace MorphSDK.Dto
 {
     [DataContract]
+    [KnownType(typeof(ValidateTasksErrorDto))]
     internal class Error
     {
 

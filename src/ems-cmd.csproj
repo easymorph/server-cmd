@@ -54,6 +54,8 @@
     <Compile Include="Models\Parameters.cs" />
     <Compile Include="MorphSDK\Client\IMorphServerApiClient.cs" />
     <Compile Include="MorphSDK\Client\MorphServerApiClient.cs" />
+    <Compile Include="MorphSDK\Dto\Commands\ValidateTaskResultDto.cs" />
+    <Compile Include="MorphSDK\Dto\Commands\ValidateTasksRequestDto.cs" />
     <Compile Include="MorphSDK\Dto\Error.cs" />
     <Compile Include="MorphSDK\Dto\InnerError.cs" />
     <Compile Include="MorphSDK\Dto\ReadableErrorTopCode.cs" />
@@ -64,10 +66,15 @@
     <Compile Include="MorphSDK\Dto\ErrorResponse.cs" />
     <Compile Include="MorphSDK\Dto\RunningTaskStatusDto.cs" />
     <Compile Include="MorphSDK\Helper\FileProgress.cs" />
+    <Compile Include="MorphSDK\Helper\JsonSerializationHelper.cs" />
     <Compile Include="MorphSDK\Helper\ProgressStreamContent.cs" />
     <Compile Include="MorphSDK\Helper\IFileProgress.cs" />
     <Compile Include="MorphSDK\Helper\QueryBuilder.cs" />
-    <Compile Include="MorphSDK\Helper\SpaceBrowsingMapper.cs" />
+    <Compile Include="MorphSDK\Mappers\FieldErrorsMapper.cs" />
+    <Compile Include="MorphSDK\Mappers\ValidateTasksErrorMapper.cs" />
+    <Compile Include="MorphSDK\Mappers\SpaceBrowsingMapper.cs" />
+    <Compile Include="MorphSDK\Model\Errors\FieldError.cs" />
+    <Compile Include="MorphSDK\Model\Errors\ValidateTasksError.cs" />
     <Compile Include="MorphSDK\Model\DownloadFileInfo.cs" />
     <Compile Include="MorphSDK\Model\FileProgressState.cs" />
     <Compile Include="MorphSDK\Model\RunningTaskStatus.cs" />

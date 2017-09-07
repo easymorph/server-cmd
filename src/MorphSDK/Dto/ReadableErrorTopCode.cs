@@ -2,7 +2,8 @@
 {
     internal static class ReadableErrorTopCode
     {
-        public const string ValidationError = "ValidationError";
+        public const string BadArgument = "BadArgument";
+        public const string CommandFailed = "CommandFailed";
         public const string ServerError = "ServerError";
         public const string NotFound = "NotFound";
         public const string GeneralError = "GeneralError";

@@ -5,6 +5,7 @@ using MorphSDK.Client;
 using MorphSDK.Events;
 using MorphSDK.Exceptions;
 using MorphSDK.Model;
+using MorphSDK.Model.Errors;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,7 +46,7 @@ namespace MorphCmd.BusinessLogic
             //todo: get project name from StartTaskAsync
             _output.WriteInfo(string.Format("Project '{0}' is running. Waiting until done.", info.ProjectName));
             do
-            {                
+            {
                 await Task.Delay(TimeSpan.FromSeconds(1));
             }
             while ((await _apiClient.GetRunningTaskStatusAsync(parameters.Space, parameters.TaskId.Value, _cancellationTokenSource.Token)).IsRunning);
@@ -61,11 +62,39 @@ namespace MorphCmd.BusinessLogic
                 _output.WriteInfo("RUNASYNC usage sample: ems-cmd run http://10.20.30.40:6330 -space Default -taskID 8de5b50a-2d65-44f4-9e86-660c2408fb06");
                 return;
             }
-            _output.WriteInfo("Attempting to start task " + parameters.TaskId.Value.ToString("D") );
+            _output.WriteInfo("Attempting to start task " + parameters.TaskId.Value.ToString("D"));
             var info = await _apiClient.StartTaskAsync(parameters.Space, parameters.TaskId.Value, _cancellationTokenSource.Token);
             //todo: get project name from StartTaskAsync
-            _output.WriteInfo( string.Format("Project '{0}' is running.", info.ProjectName));
+            _output.WriteInfo(string.Format("Project '{0}' is running.", info.ProjectName));
 
+        }
+
+        protected async Task ValidateTasks(Parameters parameters)
+        {
+          
+            try
+            {
+                _output.WriteInfo("Validating tasks for the project '" + parameters.Location + "'");
+                await _apiClient.ValidateTasksAsync(parameters.Space, parameters.Location, _cancellationTokenSource.Token);
+                
+                _output.WriteInfo("All tasks are valid");
+            }
+            catch (MorphApiCommandFailedException<ValidateTasksError> z)
+            {
+                _output.WriteError(z.Message);
+                foreach (var e in z.Details.FailedTasks)
+                {
+                    _output.WriteError("Task " + e.TaskId + ": " + e.Text);
+                }
+            }
+            catch (MorphApiBadArgumentException ba)
+            {
+                _output.WriteError(ba.Message);
+                foreach (var e in ba.Details)
+                {
+                    _output.WriteInfo(e.Field + ": " + e.Message);
+                }
+            }
         }
 
         protected async Task Browse(Parameters parameters)
@@ -114,16 +143,16 @@ namespace MorphCmd.BusinessLogic
                 _output.WriteInfo("UPLOAD usage sample: ems-cmd upload http://10.20.30.40:6330 -space Default  -from \"C:\\Users\\Public\\Documents\\Morphs\\sample.morph\" -to \"folder 1\"");
                 return;
             }
-            
+
             if (string.IsNullOrWhiteSpace(parameters.To))
             {
-                _output.WriteInfo(string.Format("Uploading file '{0}' to the root folder of space '{1}'...", parameters.From, parameters.Space??"Default"));
+                _output.WriteInfo(string.Format("Uploading file '{0}' to the root folder of space '{1}'...", parameters.From, parameters.Space ?? "Default"));
             }
             else
             {
                 _output.WriteInfo(string.Format("Uploading file '{0}' to folder '{1}' of space '{2}'...", parameters.From, parameters.To, parameters.Space ?? "Default"));
             }
-            
+
             if (!System.IO.File.Exists(parameters.From))
             {
                 _output.WriteError(string.Format("File '{0} not exists.'", parameters.From));
@@ -396,6 +425,9 @@ namespace MorphCmd.BusinessLogic
                         break;
                     case "download":
                         await DownloadFile(parameters);
+                        break;
+                    case "validatetasks":
+                        await ValidateTasks(parameters);
                         break;
                     default:
                         _output.WriteInfo("Supported commands: run, runasync, status, upload, browse, download");

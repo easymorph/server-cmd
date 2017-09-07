@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 using System.Net;
 using MorphSDK.Events;
 using System.Collections.Specialized;
+using MorphSDK.Dto.Commands;
+using MorphSDK.Model.Errors;
+using MorphSDK.Mappers;
 
 namespace MorphSDK.Client
 {
@@ -83,14 +86,9 @@ namespace MorphSDK.Client
         {
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadAsStringAsync();
-                var serializer = new DataContractJsonSerializer(typeof(T));
-                var d = Encoding.UTF8.GetBytes(result);
-                using (var ms = new MemoryStream(d))
-                {
-                    var data = (T)serializer.ReadObject(ms);
-                    return data;
-                }
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializationHelper.Deserialize<T>(content);
+                return result;
             }
             else
             {
@@ -113,31 +111,41 @@ namespace MorphSDK.Client
         private static async Task HandleErrorResponse(HttpResponseMessage response)
         {
 
-            var result = await response.Content.ReadAsStringAsync();
-
-            if (!string.IsNullOrWhiteSpace(result))
+            var content = await response.Content.ReadAsStringAsync();
+            if (!string.IsNullOrWhiteSpace(content))
             {
+                var errorResponse = JsonSerializationHelper.Deserialize<ErrorResponse>(content);
+                if (errorResponse == null)
+                    throw new MorphClientCommunicationException("An error occurred while deserializing the response");
 
                 var serializer = new DataContractJsonSerializer(typeof(ErrorResponse));
-                using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(result)))
+                if (errorResponse.error != null)
                 {
-                    var errorResponse = (ErrorResponse)serializer.ReadObject(ms);
-                    if (errorResponse != null && errorResponse.error != null)
+                    switch (errorResponse.error.code)
                     {
-                        switch (errorResponse.error.code)
-                        {
-                            case ReadableErrorTopCode.Conflict: throw new MorphApiConflictException(errorResponse.error.message);
-                            case ReadableErrorTopCode.NotFound: throw new MorphApiNotFoundException(errorResponse.error.message);
-                            case ReadableErrorTopCode.Forbidden: throw new MorphApiForbiddenException(errorResponse.error.message);
-                        }
+                        case ReadableErrorTopCode.Conflict: throw new MorphApiConflictException(errorResponse.error.message);
+                        case ReadableErrorTopCode.NotFound: throw new MorphApiNotFoundException(errorResponse.error.message);
+                        case ReadableErrorTopCode.Forbidden: throw new MorphApiForbiddenException(errorResponse.error.message);
+                        case ReadableErrorTopCode.BadArgument: throw new MorphApiBadArgumentException(FieldErrorsMapper.MapFromDto(errorResponse.error), errorResponse.error.message); 
+                        case ReadableErrorTopCode.CommandFailed:
+                            {
+                                switch (errorResponse.error.innererror.code)
+                                {
+                                    case "ValidateTasksError":
+                                        var validateTasksError = (ValidateTasksErrorDto)errorResponse.error.innererror;
+                                        throw new MorphApiCommandFailedException<ValidateTasksError>(ValidateTasksErrorMapper.MapFromDto(validateTasksError), errorResponse.error.message);                                        
+                                    default: throw new NotImplementedException();
+                                }
+                                
+                            }
 
-                        throw new MorphClientGeneralException(errorResponse.error.code, errorResponse.error.message);
                     }
-                    else throw new MorphClientCommunicationException("An error occurred while deserializing the response");
+
+                    throw new MorphClientGeneralException(errorResponse.error.code, errorResponse.error.message);
                 }
-
-
+                else throw new MorphClientCommunicationException("An error occurred while deserializing the response");
             }
+
             else
             {
                 //todo: analize response.StatusCode
@@ -457,6 +465,39 @@ namespace MorphSDK.Client
                 await HandleResponse(response);
             }
 
+        }
+
+
+        /// <summary>
+        /// Validate tasks. Checks that there are no excess parameters in the created tasks. Raises <see cref="MorphSDK.Exceptions.MorphApiCommandFailedException{MorphSDK.Model.Errors.ValidateTasksError}"/> 
+        /// where T is <see cref="MorphSDK.Model.Errors.ValidateTasksError"/> in case of validation errors
+        /// </summary>
+        /// <param name="spaceName">space name</param>
+        /// <param name="projectPath">path to the morph project file</param>
+        /// <exception cref="MorphSDK.Exceptions.MorphApiCommandFailedException{TDetail}">Thrown when validation fails. See more info in exception Details property</exception>
+        /// <strong>TDetail</strong> may be typed as:
+        /// <para>
+        /// <see cref="MorphSDK.Model.Errors.ValidateTasksError"/>
+        /// </para>
+        /// <exception cref="MorphSDK.Exceptions.MorphApiBadArgumentException">Thrown when bad arguments were passed</exception>
+        /// <returns></returns>
+        public async Task ValidateTasksAsync(string spaceName, string projectPath, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(projectPath))
+                throw new ArgumentException(nameof(projectPath));
+            spaceName = PrepareSpaceName(spaceName);
+            var url = "commands/validatetasks";
+            var request = new ValidateTasksRequestDto
+            {
+                SpaceName = spaceName,
+                ProjectPath = projectPath
+            };
+            using (var response = await GetHttpClient().PostAsync(url, new StringContent(JsonSerializationHelper.Serialize(request), Encoding.UTF8, "application/json"), cancellationToken))
+            {
+
+                await HandleResponse(response);
+             
+            }
         }
     }
 
