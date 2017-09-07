@@ -1,11 +1,11 @@
 ﻿using MorphCmd.Interfaces;
 using MorphCmd.Models;
 using MorphCmd.Utils;
-using MorphSDK.Client;
-using MorphSDK.Events;
-using MorphSDK.Exceptions;
-using MorphSDK.Model;
-using MorphSDK.Model.Errors;
+using Morph.Server.Sdk.Client;
+using Morph.Server.Sdk.Events;
+using Morph.Server.Sdk.Exceptions;
+using Morph.Server.Sdk.Model;
+using Morph.Server.Sdk.Model.Errors;
 using System;
 using System.Collections.Generic;
 using System.IO;

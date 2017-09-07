@@ -52,34 +52,6 @@
     <Compile Include="BusinessLogic\FileExistsException.cs" />
     <Compile Include="Interfaces\IInputEndpoint.cs" />
     <Compile Include="Models\Parameters.cs" />
-    <Compile Include="MorphSDK\Client\IMorphServerApiClient.cs" />
-    <Compile Include="MorphSDK\Client\MorphServerApiClient.cs" />
-    <Compile Include="MorphSDK\Dto\Commands\ValidateTaskResultDto.cs" />
-    <Compile Include="MorphSDK\Dto\Commands\ValidateTasksRequestDto.cs" />
-    <Compile Include="MorphSDK\Dto\Error.cs" />
-    <Compile Include="MorphSDK\Dto\InnerError.cs" />
-    <Compile Include="MorphSDK\Dto\ReadableErrorTopCode.cs" />
-    <Compile Include="MorphSDK\Dto\ServerStatusDto.cs" />
-    <Compile Include="MorphSDK\Dto\SpaceBrowsingResponseDto.cs" />
-    <Compile Include="MorphSDK\Events\FileEventArgs.cs" />
-    <Compile Include="MorphSDK\Exceptions\MorphClientGeneralException.cs" />
-    <Compile Include="MorphSDK\Dto\ErrorResponse.cs" />
-    <Compile Include="MorphSDK\Dto\RunningTaskStatusDto.cs" />
-    <Compile Include="MorphSDK\Helper\FileProgress.cs" />
-    <Compile Include="MorphSDK\Helper\JsonSerializationHelper.cs" />
-    <Compile Include="MorphSDK\Helper\ProgressStreamContent.cs" />
-    <Compile Include="MorphSDK\Helper\IFileProgress.cs" />
-    <Compile Include="MorphSDK\Helper\QueryBuilder.cs" />
-    <Compile Include="MorphSDK\Mappers\FieldErrorsMapper.cs" />
-    <Compile Include="MorphSDK\Mappers\ValidateTasksErrorMapper.cs" />
-    <Compile Include="MorphSDK\Mappers\SpaceBrowsingMapper.cs" />
-    <Compile Include="MorphSDK\Model\Errors\FieldError.cs" />
-    <Compile Include="MorphSDK\Model\Errors\ValidateTasksError.cs" />
-    <Compile Include="MorphSDK\Model\DownloadFileInfo.cs" />
-    <Compile Include="MorphSDK\Model\FileProgressState.cs" />
-    <Compile Include="MorphSDK\Model\RunningTaskStatus.cs" />
-    <Compile Include="MorphSDK\Model\ServerStatus.cs" />
-    <Compile Include="MorphSDK\Model\SpaceBrowsingInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Interfaces\IOutputEndpoint.cs" />
@@ -89,7 +61,12 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\server-sdk\src\Morph.Server.Sdk.csproj">
+      <Project>{72ecc66f-62fe-463f-afad-e1ff5cc19cd9}</Project>
+      <Name>Morph.Server.Sdk</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
