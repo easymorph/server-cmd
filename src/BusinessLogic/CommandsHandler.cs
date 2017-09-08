@@ -75,18 +75,22 @@ namespace MorphCmd.BusinessLogic
             try
             {
                 _output.WriteInfo("Validating tasks for the project '" + parameters.Location + "'");
-                await _apiClient.ValidateTasksAsync(parameters.Space, parameters.Location, _cancellationTokenSource.Token);
-                
-                _output.WriteInfo("All tasks are valid");
-            }
-            catch (MorphApiCommandFailedException<ValidateTasksError> z)
-            {
-                _output.WriteError(z.Message);
-                foreach (var e in z.Details.FailedTasks)
+                var result = await _apiClient.ValidateTasksAsync(parameters.Space, parameters.Location, _cancellationTokenSource.Token);
+
+                if (result.FailedTasks.Count == 0)
                 {
-                    _output.WriteError("Task " + e.TaskId + ": " + e.Text);
+                    _output.WriteInfo("All tasks are valid");
+                }
+                else
+                {
+                    _output.WriteError(result.Message);
+                    foreach(var item in result.FailedTasks)
+                    {
+                        _output.WriteInfo(item.TaskId + ": " + item.Message + "@" +item.TaskApiUrl);
+                    }
                 }
             }
+            
             catch (MorphApiBadArgumentException ba)
             {
                 _output.WriteError(ba.Message);

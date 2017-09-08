@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using Morph.Server.Sdk.Client;
 using MorphCmd.Utils;
 using MorphCmd.BusinessLogic;
+using System.IO;
 
 namespace MorphCmd
 {
     class Program
-    {      
+    {
 
         static void Main(string[] args)
         {
@@ -24,23 +25,36 @@ namespace MorphCmd
                 Environment.Exit(0);
             }
             var param = CmdParametersHelper.ParseParams(args);
-            if(param == null)
+            if (param == null)
             {
                 Console.WriteLine("Unable to parse command parameters");
                 Environment.Exit(-1);
             }
-            MainAsync(args[0], args[1], param).Wait();
+            try
+            {
+                MainAsync(args[0], args[1], param).Wait();
+            }
+            catch (FileNotFoundException ex)
+            {
+                Console.WriteLine("File not found " + ex.FileName);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error occured " + e.Message);
+            }
         }
 
 
 
         static async Task MainAsync(string command, string url, Dictionary<string, string> paramsDict)
         {
+
             var apiClient = new MorphServerApiClient(url);
             var output = new ConsoleOutput();
             var input = new ConsoleInput();
             var handler = new CommandsHandler(output, input, apiClient);
             await handler.Handle(command, paramsDict);
+
         }
     }
 
