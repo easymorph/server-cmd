@@ -7,3 +7,5 @@
 /src/.vs/ems-cmd/v15
 /.vs/server-cmd/v14
 /src/ems-cmd.csproj.user
+/src/bin/Release
+/src/obj/Release
