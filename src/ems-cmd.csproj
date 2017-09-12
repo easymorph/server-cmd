@@ -52,8 +52,8 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Morph.Server.Sdk, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EasyMorph.Server.SDK.1.2.0-beta03\lib\Net45\Morph.Server.Sdk.dll</HintPath>
+    <Reference Include="Morph.Server.Sdk, Version=1.2.0.0, Culture=neutral, PublicKeyToken=a2b49011e9be7082, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EasyMorph.Server.SDK.1.2.0-beta04\lib\Net45\Morph.Server.Sdk.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
