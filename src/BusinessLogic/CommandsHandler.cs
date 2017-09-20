@@ -74,7 +74,7 @@ namespace MorphCmd.BusinessLogic
           
             try
             {
-                _output.WriteInfo("Validating tasks for the project '" + parameters.Location + "'");
+                _output.WriteInfo("Validating tasks for the project '" + parameters.Location + "'");                
                 var result = await _apiClient.ValidateTasksAsync(parameters.Space, parameters.Location, _cancellationTokenSource.Token);
 
                 if (result.FailedTasks.Count == 0)
@@ -185,6 +185,10 @@ namespace MorphCmd.BusinessLogic
 
             };
 
+            var browsing = await _apiClient.BrowseSpaceAsync(parameters.Space, parameters.To, _cancellationTokenSource.Token);
+            if (!browsing.CanUploadFiles)
+                throw new Exception("Uploading to this space is disabled");
+
 
             if (parameters.YesToAll)
             {
@@ -195,7 +199,7 @@ namespace MorphCmd.BusinessLogic
             else
             {
 
-                var fileExists = await _apiClient.IsFileExistsAsync(parameters.Space, parameters.To, Path.GetFileName(parameters.From), _cancellationTokenSource.Token);
+                var fileExists = browsing.IsFileExists(Path.GetFileName(parameters.From));
                 if (fileExists)
                 {
                     if (_output.IsOutputRedirected)
