@@ -199,7 +199,7 @@ namespace MorphCmd.BusinessLogic
             else
             {
 
-                var fileExists = browsing.IsFileExists(Path.GetFileName(parameters.From));
+                var fileExists = browsing.FileExists(Path.GetFileName(parameters.From));
                 if (fileExists)
                 {
                     if (_output.IsOutputRedirected)
