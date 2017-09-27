@@ -9,3 +9,4 @@
 /src/ems-cmd.csproj.user
 /src/bin/Release
 /src/obj/Release
+/src/*.snk
