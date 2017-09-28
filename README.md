@@ -95,7 +95,7 @@ This command will download one single file from server
 
 If local file already exists, you will be prompted to overwrite it. 
 Notice, that when you are using a redirected output (e.g. to the file) and local file already exists, download will fail. 
-In any case, you may use parameter '/y' to overwrite existing file without any prompts.
+In any case, you may use parameter `/y` to overwrite existing file without any prompts.
 
 ```
 ems-cmd download http://192.168.100.200:6330 -space Default -to "D:\your\local\folder" -from "server\folder\file.xml" 
@@ -104,7 +104,7 @@ ems-cmd download http://192.168.100.200:6330 -space Default -to "D:\your\local\f
 * `-space` - space name, e.g. `Default`
 * `-to` - destination folder (you local folder).
 * `-from` - relative path to file in the space `-space`
-* '/y' - overwrite existing file (silent agree)
+* `/y` - overwrite existing file (silent agree)
 
 ###### Output
 ```
@@ -118,7 +118,7 @@ This command will upload one single to server
 
 If remote file already exists, you will be prompted to overwrite it. 
 Notice, that when you are using a redirected output (e.g. to the file) and remote file already exists, upload will fail. 
-In any case, you may use parameter '/y' to overwrite existing file without any prompts.
+In any case, you may use parameter `/y` to overwrite existing file without any prompts.
 
 ```
 ems-cmd upload http://192.168.100.200:6330 -space Default -from "D:\your\local\folder\file.xml" -to "\" 
@@ -127,12 +127,36 @@ ems-cmd upload http://192.168.100.200:6330 -space Default -from "D:\your\local\f
 * `-space` - space name, e.g. `Default`
 * `-to` - destination folder (remote folder, relative path in the space `-space`).
 * `-from` - path to your local file
-* '/y' - overwrite existing file (silent agree)
+* `/y` - overwrite existing file (silent agree)
 
 ###### Output
 ```
 Uploading file 'D:\your\local\folder\file.xml' to folder '\' of space 'Default'...
 Operation completed
+```
+
+
+
+#### Browsing files
+This command browses folder content in space
+
+```
+ems-cmd browse http://192.168.100.200:6330 -space Default -location "\folder 2"
+```
+###### Parameters
+* `-space` - space name, e.g. `Default`
+* `-location` - remote folder(relative path in the space `-space`).
+
+
+###### Output
+```
+Browsing the folder 'folder 2' of the space Default
+Space: Default
+Free space: 7820345344 bytes
+09/05/2017 09:39:22 PM        <DIR>            Folder 2.1
+09/20/2017 09:45:33 AM        <DIR>            Folder 3
+09/28/2017 03:44:16 PM                   8,123 project.morph
+Listing done
 ```
 
 
