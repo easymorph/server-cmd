@@ -90,6 +90,30 @@ Project 'sample.morph' is running.
 
 
 ### Files Related
+
+#### Browsing files
+This command browses folder in space
+
+```
+ems-cmd browse http://192.168.100.200:6330 -space Default -location "\folder 2"
+```
+###### Parameters
+* `-space` - space name, e.g. `Default`
+* `-location` - remote folder(relative path in the space `-space`).
+
+
+###### Output
+```
+Browsing the folder 'folder 2' of the space Default
+Space: Default
+Free space: 7820345344 bytes
+09/05/2017 09:39:22 PM        <DIR>            Folder 2.1
+09/20/2017 09:45:33 AM        <DIR>            Folder 3
+09/28/2017 03:44:16 PM                   8,123 project.morph
+Listing done
+```
+
+
 #### Download the file
 This command will download one single file from server
 
@@ -136,28 +160,16 @@ Operation completed
 ```
 
 
-
-#### Browsing files
-This command browses folder content in space
+#### File deletion
+This command will delete remote file
 
 ```
-ems-cmd browse http://192.168.100.200:6330 -space Default -location "\folder 2"
+ems-cmd del http://192.168.100.200:6330 -space Default -file "folder 2\file.xml" 
 ```
 ###### Parameters
 * `-space` - space name, e.g. `Default`
-* `-location` - remote folder(relative path in the space `-space`).
+* `-file` - relative path in the space `-space` to the file
 
-
-###### Output
-```
-Browsing the folder 'folder 2' of the space Default
-Space: Default
-Free space: 7820345344 bytes
-09/05/2017 09:39:22 PM        <DIR>            Folder 2.1
-09/20/2017 09:45:33 AM        <DIR>            Folder 3
-09/28/2017 03:44:16 PM                   8,123 project.morph
-Listing done
-```
 
 
 
