@@ -1,11 +1,11 @@
 ### Introduction
 
-EasyMorph Server Command Line Client (in further text – **ems-cmd**) allows you to run server command via REST API.
+EasyMorph Server Command Line Client (in further text – **ems-cmd**) allows you to run server commands via REST API.
 
 
 ### Requirements
-1. OS Windows with installed .Net 4.5 or later
-2. Morph.Server.Sdk.dll (deployed with ems-cmd).  
+1. OS Windows with .Net 4.5 or later
+2. Morph.Server.Sdk.dll (deployed together with ems-cmd).  
 
 
 General command format:
@@ -45,10 +45,10 @@ ServerVersion:1.2.0.0
 
 ### Tasks Related
 #### Start the task 
-This command will wait until task is done. 
+This command will start specified task and wait until it is done. 
 
-To start the task you need to know task space name and task ID. 
-Make sure to check the task execution log at server to determine task execution status.
+To start the task you need to know space name and the task ID. 
+Make sure to check the task execution server log to determine task execution info.
 ```
 ems-cmd run http://192.168.100.200:6330 -space Default -taskID 59b824f0-4b81-453f-b9e0-1c58b97c9fb9
 ```
@@ -56,7 +56,7 @@ ems-cmd run http://192.168.100.200:6330 -space Default -taskID 59b824f0-4b81-453
 * `-space` - space name, e.g. `Default`
 * `-taskID` - task guid.
 
-Task guid can be found in the browser location toolbar. E.g, if you have clicked on the edit task link, your browser location seems to be  `http://localhost:6330/default/tasks/edit/59b824f0-4b81-453f-b9e0-1c58b97c9fb9`, where `59b824f0-4b81-453f-b9e0-1c58b97c9fb9` - is a task guid
+Task guid can be found in the browser location toolbar. E.g, if you have clicked on the edit task link, your browser location seems to be  `http://localhost:6330/default/tasks/edit/59b824f0-4b81-453f-b9e0-1c58b97c9fb9`, where `59b824f0-4b81-453f-b9e0-1c58b97c9fb9` - is a desired value
 
 ###### Output
 ```
@@ -66,7 +66,7 @@ Project 'sample.morph' is running. Waiting until done.
 Task 59b824f0-4b81-453f-b9e0-1c58b97c9fb9 completed
 ```
 
-#### Start the task asynchronously (fire and forget)
+#### Start task asynchronously (fire and forget)
 This command return control immediately after task was enqueued 
 
 
@@ -79,7 +79,7 @@ ems-cmd runasync http://192.168.100.200:6330 -space Default -taskID 59b824f0-4b8
 * `-space` - space name, e.g. `Default`
 * `-taskID` - task guid.
 
-Task guid can be found in the browser location toolbar. E.g, if you have clicked on the edit task link, your browser location seems to be  `http://localhost:6330/default/tasks/edit/59b824f0-4b81-453f-b9e0-1c58b97c9fb9`, where `59b824f0-4b81-453f-b9e0-1c58b97c9fb9` - is a task guid
+Task guid can be found in the browser location toolbar. E.g, if you have clicked on the edit task link, your browser location seems to be  `http://localhost:6330/default/tasks/edit/59b824f0-4b81-453f-b9e0-1c58b97c9fb9`, where `59b824f0-4b81-453f-b9e0-1c58b97c9fb9` - is a desired value
 
 ###### Output
 ```
@@ -92,7 +92,7 @@ Project 'sample.morph' is running.
 ### Files Related
 
 #### Browsing files
-This command browses folder in space
+This command shows folder content
 
 ```
 ems-cmd browse http://192.168.100.200:6330 -space Default -location "\folder 2"
