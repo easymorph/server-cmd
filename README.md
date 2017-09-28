@@ -113,3 +113,28 @@ Operation completed
 ```
 
 
+#### Upload the file
+This command will upload one single to server
+
+If remote file already exists, you will be prompted to overwrite it. 
+Notice, that when you are using a redirected output (e.g. to the file) and remote file already exists, upload will fail. 
+In any case, you may use parameter '/y' to overwrite existing file without any prompts.
+
+```
+ems-cmd upload http://192.168.100.200:6330 -space Default -from "D:\your\local\folder\file.xml" -to "\" 
+```
+###### Parameters
+* `-space` - space name, e.g. `Default`
+* `-to` - destination folder (remote folder, relative path in the space `-space`).
+* `-from` - path to your local file
+* '/y' - overwrite existing file (silent agree)
+
+###### Output
+```
+Uploading file 'D:\your\local\folder\file.xml' to folder '\' of space 'Default'...
+Operation completed
+```
+
+
+
+
