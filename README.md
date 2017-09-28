@@ -54,7 +54,7 @@ ems-cmd run http://192.168.100.200:6330 -space Default -taskID 59b824f0-4b81-453
 ```
 ###### Parameters
 * `-space` - space name, e.g. `Default`
-* `taskID` - task guid.
+* `-taskID` - task guid.
 
 Task guid can be found in the browser location toolbar. E.g, if you have clicked on the edit task link, your browser location seems to be  `http://localhost:6330/default/tasks/edit/59b824f0-4b81-453f-b9e0-1c58b97c9fb9`, where `59b824f0-4b81-453f-b9e0-1c58b97c9fb9` - is a task guid
 
@@ -77,7 +77,7 @@ ems-cmd runasync http://192.168.100.200:6330 -space Default -taskID 59b824f0-4b8
 ```
 ###### Parameters
 * `-space` - space name, e.g. `Default`
-* `taskID` - task guid.
+* `-taskID` - task guid.
 
 Task guid can be found in the browser location toolbar. E.g, if you have clicked on the edit task link, your browser location seems to be  `http://localhost:6330/default/tasks/edit/59b824f0-4b81-453f-b9e0-1c58b97c9fb9`, where `59b824f0-4b81-453f-b9e0-1c58b97c9fb9` - is a task guid
 
@@ -89,5 +89,27 @@ Project 'sample.morph' is running.
 
 
 
+### Files Related
+#### Download the file
+This command will download one single file from server
+
+If local file already exists, you will be prompted to overwrite it. 
+Notice, that when you are using a redirected output (e.g. to the file) and local file already exists, download will fail. 
+In any case, you may use parameter '/y' to overwrite existing file without any prompts.
+
+```
+ems-cmd download http://192.168.100.200:6330 -space Default -to "D:\your\local\folder" -from "server\folder\file.xml" 
+```
+###### Parameters
+* `-space` - space name, e.g. `Default`
+* `-to` - destination folder (you local folder).
+* `-from` - relative path to file in the space `-space`
+* '/y' - overwrite existing file (silent agree)
+
+###### Output
+```
+Downloading file 'server\folder\file.xml' from space 'Default' into 'D:\your\local\folder'...
+Operation completed
+```
 
 
