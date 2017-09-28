@@ -24,9 +24,9 @@ where
 
 ### Commands
 
-#### Server Related
+### Server Related
 
-##### Retrieve server status
+#### Retrieve server status
 
 ```bash
 ems-cmd status http://192.168.100.200:6330
@@ -43,12 +43,50 @@ StatusMessage: Server is OK
 ServerVersion:1.2.0.0
 ```
 
-#### Tasks Related
-##### Start the task 
+### Tasks Related
+#### Start the task 
+This command will wait until task is done. 
+
 To start the task you need to know task space name and task ID. 
+Make sure to check the task execution log at server to determine task execution status.
 ```
-ems-cmd run http://192.168.100.200:6330 -space Default -taskID 8de5b50a-2d65-44f4-9e86-660c2408fb06
+ems-cmd run http://192.168.100.200:6330 -space Default -taskID 59b824f0-4b81-453f-b9e0-1c58b97c9fb9
 ```
+###### Parameters
+* `-space` - space name, e.g. `Default`
+* `taskID` - task guid.
+
+Task guid can be found in the browser location toolbar. E.g, if you have clicked on the edit task link, your browser location seems to be  `http://localhost:6330/default/tasks/edit/59b824f0-4b81-453f-b9e0-1c58b97c9fb9`, where `59b824f0-4b81-453f-b9e0-1c58b97c9fb9` - is a task guid
+
+###### Output
+```
+Attempting to start task 59b824f0-4b81-453f-b9e0-1c58b97c9fb9
+Project 'sample.morph' is running. Waiting until done.
+
+Task 59b824f0-4b81-453f-b9e0-1c58b97c9fb9 completed
+```
+
+#### Start the task asynchronously (fire and forget)
+This command return control immediately after task was enqueued 
+
+
+To start the task you need to know task space name and task ID. 
+Make sure to check the task execution log at server to determine task execution status.
+```
+ems-cmd runasync http://192.168.100.200:6330 -space Default -taskID 59b824f0-4b81-453f-b9e0-1c58b97c9fb9
+```
+###### Parameters
+* `-space` - space name, e.g. `Default`
+* `taskID` - task guid.
+
+Task guid can be found in the browser location toolbar. E.g, if you have clicked on the edit task link, your browser location seems to be  `http://localhost:6330/default/tasks/edit/59b824f0-4b81-453f-b9e0-1c58b97c9fb9`, where `59b824f0-4b81-453f-b9e0-1c58b97c9fb9` - is a task guid
+
+###### Output
+```
+Attempting to start task 59b824f0-4b81-453f-b9e0-1c58b97c9fb9
+Project 'sample.morph' is running.
+```
+
 
 
 
