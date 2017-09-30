@@ -298,8 +298,8 @@ namespace MorphCmd.BusinessLogic
                         await _apiClient.DownloadFileAsync(parameters.Space, parameters.From, (fileInfo) =>
                         {
                             destFileName = Path.Combine(parameters.To, fileInfo.FileName);
-                            bool allowOverride = parameters.YesToAll;
-                            if (!allowOverride && System.IO.File.Exists(destFileName))
+                            
+                            if (!parameters.YesToAll && File.Exists(destFileName))
                                 throw new FileExistsException("File already exists");
                             allowLoading = true;
                             return true;
@@ -311,23 +311,23 @@ namespace MorphCmd.BusinessLogic
                         allowLoading = false;
                         if (!_output.IsOutputRedirected)
                         {
-                            _output.WriteInfo(string.Format("Destination file '{0}' already exists. Would you like to override it? Y/N", destFileName));
-                            _output.WriteInfo("You may pass /y parameter to override file without any questions");
+                            _output.WriteInfo(string.Format("Destination file '{0}' already exists. Would you like to overwrite it? Y/N", destFileName));
+                            _output.WriteInfo("You may pass /y parameter to overwrite file without any questions");
                             var answer = _input.ReadLine();
                             if (answer.Trim().ToLowerInvariant().StartsWith("y"))
                             {
                                 allowLoading = true;
-                                _output.WriteInfo("File will be overridden");
+                                _output.WriteInfo("File will be overwritten");
                             }
                             else
                             {
                                 _output.WriteInfo("Operation canceled");
-                                throw;
+                                return;
                             }
                         }
                         else
                         {
-                            _output.WriteError("File already exists. To override file user /y flag");
+                            _output.WriteError("File already exists. To overwrite file use /y flag");
                             allowLoading = false;
                         }
                         if (allowLoading)
