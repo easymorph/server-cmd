@@ -1,4 +1,4 @@
-### Introduction
+## Introduction
 
 EasyMorph Server Command Line Client (in further text – **ems-cmd**) allows you to run server commands via REST API.
 
@@ -170,7 +170,9 @@ ems-cmd del http://192.168.100.200:6330 -space Default -file "folder 2\file.xml"
 * `-space` - space name, e.g. `Default`
 * `-file` - relative path in the space `-space` to the file
 
+## License 
 
+**ems-cmd* is licensed under the MIT license[https://github.com/easymorph/server-cmd/blob/master/LICENSE].
 
 
 
