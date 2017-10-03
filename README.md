@@ -114,20 +114,27 @@ Listing done
 ```
 
 
-#### Download the file
+#### Download file
 This command will download one single file from server
 
 If local file already exists, you will be prompted to overwrite it. 
 Notice, that when you are using a redirected output (e.g. to the file) and local file already exists, download will fail. 
 In any case, you may use parameter `/y` to overwrite existing file without any prompts.
 
+
+Be careful with folders that contain spaces in their names. You should add quotation marks around such parameter values. 
+Keep in mind, that sequence  `\"` will escape double quotes. So `"D:\"`, `"D:\another folder\"` are incorrect, use `D:\` and `"D:\another folder"` instead.
+
 ```
-ems-cmd download http://192.168.100.200:6330 -space Default -to "D:\your\local\folder" -from "server\folder\file.xml" 
+ems-cmd download http://192.168.100.200:6330 -space Default -destination D:\your\local\folder -source file.xml 
+ems-cmd download http://192.168.100.200:6330 -space Default -destination D:\your\local\folder -source \file.xml
+ems-cmd download http://192.168.100.200:6330 -space Default -destination D:\your\local\folder -source \server\folder\file.xml
+ems-cmd download http://192.168.100.200:6330 -space Default -destination "D:\local\folder with spaces" -source "server\folder with spaces\file3.xml" 
 ```
 ###### Parameters
 * `-space` - space name, e.g. `Default`
-* `-to` - destination folder (you local folder).
-* `-from` - relative path to file in the space `-space`
+* `-destination` - destination folder (you local folder).
+* `-source` - relative path to file in the space `-space`
 * `/y` - overwrite existing file (silent agree)
 
 ###### Output
@@ -137,20 +144,28 @@ Operation completed
 ```
 
 
-#### Upload the file
+#### Upload file
 This command will upload one single to server
 
 If remote file already exists, you will be prompted to overwrite it. 
 Notice, that when you are using a redirected output (e.g. to the file) and remote file already exists, upload will fail. 
 In any case, you may use parameter `/y` to overwrite existing file without any prompts.
 
+
+Be careful with folders that contain spaces in their names. You should add quotation marks around such parameter values. 
+Keep in mind, that sequence  `\"` will escape double quotes. So `"D:\"`, `"D:\another folder\"` are incorrect, use `D:\` and `"D:\another folder"` instead.
+
+
 ```
-ems-cmd upload http://192.168.100.200:6330 -space Default -from "D:\your\local\folder\file.xml" -to "\" 
+ems-cmd upload http://192.168.100.200:6330 -space Default -source D:\your\local\folder\file.xml -destination \
+ems-cmd upload http://192.168.100.200:6330 -space Default -source D:\your\local\folder\file2.xml -destination "folder 2"
+ems-cmd upload http://192.168.100.200:6330 -space Default -source D:\your\local\folder\file2.xml -destination "folder 2\sub folder"
+ems-cmd upload http://192.168.100.200:6330 -space Default -source "D:\local\folder with spaces" -destination "folder 2\sub folder"
 ```
 ###### Parameters
 * `-space` - space name, e.g. `Default`
-* `-to` - destination folder (remote folder, relative path in the space `-space`).
-* `-from` - path to your local file
+* `-destination` - destination folder (remote folder, relative path in the space `-space`).
+* `-source` - path to your local file
 * `/y` - overwrite existing file (silent agree)
 
 ###### Output
