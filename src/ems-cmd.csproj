@@ -69,10 +69,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessLogic\CommandsHandler.cs" />
+    <Compile Include="BusinessLogic\Commands\BaseCommand.cs" />
+    <Compile Include="BusinessLogic\Commands\BrowseCommand.cs" />
+    <Compile Include="BusinessLogic\Commands\CommandsFactory.cs" />
+    <Compile Include="BusinessLogic\Commands\DeleteFileCommand.cs" />
+    <Compile Include="BusinessLogic\Commands\DownloadFileCommand.cs" />
+    <Compile Include="BusinessLogic\Commands\RunTaskAndForgetCommand.cs" />
+    <Compile Include="BusinessLogic\Commands\RunTaskAndWaitCommand.cs" />
+    <Compile Include="BusinessLogic\Commands\ServerStatusCommand.cs" />
+    <Compile Include="BusinessLogic\Commands\UploadFileCommand.cs" />
+    <Compile Include="BusinessLogic\Commands\ValidateTasksCommand.cs" />
     <Compile Include="BusinessLogic\ConsoleInput.cs" />
     <Compile Include="BusinessLogic\ConsoleOutput.cs" />
-    <Compile Include="BusinessLogic\FileExistsException.cs" />
+    <Compile Include="BusinessLogic\ParametersHelper.cs" />
+    <Compile Include="Exceptions\FileExistsException.cs" />
+    <Compile Include="BusinessLogic\RunUsageSamples.cs" />
+    <Compile Include="Exceptions\All.cs" />
+    <Compile Include="Interfaces\ICommand.cs" />
     <Compile Include="Interfaces\IInputEndpoint.cs" />
+    <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Parameters.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -97,6 +112,7 @@
       <Name>Morph.Server.Sdk</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
