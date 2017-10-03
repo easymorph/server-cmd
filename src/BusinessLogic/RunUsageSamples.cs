@@ -39,6 +39,14 @@ namespace MorphCmd.BusinessLogic
             }
         }
 
-
+        internal static void WriteCreds(IOutputEndpoint output)
+        {
+            output.WriteInfo("EasyMorph Server command line client");
+            output.WriteInfo("Usage sample: ems-cmd <command> <url> -param1 value -param2 value2");
+            // ems-cmd upload http://10.20.30.40:6330 -space Default -from "C:\\Users\\Public\\Documents\\Morphs\\sample.morph" -to "folder 1" /y
+            //  space and to are not required               
+            output.WriteInfo("<command> - Supported commands: status, run, runasync, upload, download, del, browse ");
+            output.WriteInfo("<url> - path to the server, e.g. http://10.20.30.40:6330 ");
+        }
     }
 }

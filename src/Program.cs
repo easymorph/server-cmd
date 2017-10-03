@@ -17,21 +17,18 @@ namespace MorphCmd
             //TODO: add exit code for non-success execution
 
             var output = new ConsoleOutput();
-            if (args.Length < 2)
-            {
-                Console.WriteLine("Not all parameters were specified");
-                Console.WriteLine("Usage sample: ems-cmd <command> <url> -param1 value -param2 value2");
-                // ems-cmd upload http://10.20.30.40:6330 -space Default -from "C:\\Users\\Public\\Documents\\Morphs\\sample.morph" -to "folder 1" /y
-                //  space and to are not required               
-                Console.WriteLine("<command> - Supported commands: status, run, runasync, upload, download ");
-                Console.WriteLine("<url> - path to the server, e.g. http://10.20.30.40:6330 ");
-                Environment.Exit(1);
-            }
             try
             {
+                
+                if (args.Length < 2)
+                {
+                    RunUsageSamples.WriteCreds(output);
+                    Environment.Exit(1);
+                }
+
                 var paramsDict = CmdParametersHelper.ParseParams(args);
-                var parameters = ParametersHelper.ExtractParameters(args[0], args[1], paramsDict);                       
-           
+                var parameters = ParametersHelper.ExtractParameters(args[0], args[1], paramsDict);
+
                 MainAsync(parameters).Wait();
             }
             catch (FileNotFoundException ex)

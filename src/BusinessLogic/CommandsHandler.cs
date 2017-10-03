@@ -16,12 +16,7 @@ using MorphCmd.Exceptions;
 
 namespace MorphCmd.BusinessLogic
 {
-
-   
     
-    
-
-
     internal class CommandsHandler
     {
         private readonly IOutputEndpoint _output;
@@ -38,12 +33,6 @@ namespace MorphCmd.BusinessLogic
             _cancellationTokenSource = new CancellationTokenSource();
 
         }
-
-
-
-
-
-
         public async Task Handle(Parameters parameters)
         {            
 
@@ -60,7 +49,6 @@ namespace MorphCmd.BusinessLogic
 
                 throw;
             }
-
 
         }
     }
