@@ -180,11 +180,11 @@ Operation completed
 This command will delete remote file
 
 ```
-ems-cmd del http://192.168.100.200:6330 -space Default -file "folder 2\file.xml" 
+ems-cmd del http://192.168.100.200:6330 -space Default -destination "folder 2\file.xml" 
 ```
 ###### Parameters
 * `-space` - space name, e.g. `Default`
-* `-file` - relative path in the space `-space` to the file
+* `-destination` - relative path in the space `-space` to file 
 
 ## License 
 

@@ -29,7 +29,7 @@ namespace MorphCmd.BusinessLogic
                     output.WriteInfo(@"DOWNLOAD usage sample: ems-cmd download http://10.20.30.40:6330 -space Default -source ""folder 1\file.map""  -destination ""C:\Users\Public\Documents\Morphs""");
                     break;
                 case Command.Del:
-                    output.WriteInfo("DEL usage sample: ems-cmd del http://10.20.30.40:6330 -space Default -location \"folder 1\\sample.txt\" ");
+                    output.WriteInfo("DEL usage sample: ems-cmd del http://10.20.30.40:6330 -space Default -destination \"folder 1\\sample.txt\" ");
                     break;
                 default:
                     output.WriteInfo("This command hasn't usage example");
@@ -42,9 +42,8 @@ namespace MorphCmd.BusinessLogic
         internal static void WriteCreds(IOutputEndpoint output)
         {
             output.WriteInfo("EasyMorph Server command line client");
-            output.WriteInfo("Usage sample: ems-cmd <command> <url> -param1 value -param2 value2");
-            // ems-cmd upload http://10.20.30.40:6330 -space Default -from "C:\\Users\\Public\\Documents\\Morphs\\sample.morph" -to "folder 1" /y
-            //  space and to are not required               
+            output.WriteInfo("Usage sample: ems-cmd <command> <url> -param1 value -param2 value2");           
+            
             output.WriteInfo("<command> - Supported commands: status, run, runasync, upload, download, del, browse ");
             output.WriteInfo("<url> - path to the server, e.g. http://10.20.30.40:6330 ");
         }
