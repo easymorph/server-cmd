@@ -3,13 +3,13 @@
 EasyMorph Server Command Line Client (in further text – **ems-cmd**) allows you to run server commands via REST API.
 
 
-### Requirements
+#### Requirements
 1. OS Windows x86/x64  with .Net 4.5 or later
 2. Morph.Server.Sdk.dll (deployed together with ems-cmd). Also [hosted on github](https://github.com/easymorph/server-sdk)  
 3. [EasyMorph Server 1.2](http://easymorph.com/server.html) or higher (installed on a separate PC)
 
 
-General command format:
+#### General command format:
 
 ```
 ems-cmd <commad> <host> -param1 value1 -param2 "value two"
@@ -21,6 +21,12 @@ where
 + **```<command>```** - command to execute. See [Commands](#commands) section for details.
 +  **```<host>```** - Server host like `http://192.168.100.200:6330`.
   
+
+#### exit codes
+ems-cmd  may return one of the following exit codes:
+* `0` ems-cmd was successfully run to completion.
+* `1` A fatal error occurred during command parsing or execution.
+
 
 
 ### Commands
