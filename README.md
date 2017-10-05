@@ -133,14 +133,14 @@ Be careful with folders that contain spaces in their names. You should add quota
 Keep in mind, that sequence  `\"` will escape double quotes. So `"D:\"`, `"D:\another folder\"` are incorrect, use `D:\` and `"D:\another folder"` instead.
 
 ```
-ems-cmd download http://192.168.100.200:6330 -space Default -destination D:\your\local\folder -source file.xml 
-ems-cmd download http://192.168.100.200:6330 -space Default -destination D:\your\local\folder -source \file.xml
-ems-cmd download http://192.168.100.200:6330 -space Default -destination D:\your\local\folder -source \server\folder\file.xml
-ems-cmd download http://192.168.100.200:6330 -space Default -destination "D:\local\folder with spaces" -source "server\folder with spaces\file3.xml" 
+ems-cmd download http://192.168.100.200:6330 -space Default -target D:\your\local\folder -source file.xml 
+ems-cmd download http://192.168.100.200:6330 -space Default -target D:\your\local\folder -source \file.xml
+ems-cmd download http://192.168.100.200:6330 -space Default -target D:\your\local\folder -source \server\folder\file.xml
+ems-cmd download http://192.168.100.200:6330 -space Default -target "D:\local\folder with spaces" -source "server\folder with spaces\file3.xml" 
 ```
 ###### Parameters
 * `-space` - space name, e.g. `Default`
-* `-destination` - destination folder (you local folder).
+* `-target` - destination folder (you local folder).
 * `-source` - relative path to file in the space `-space`
 * `/y` - overwrite existing file (silent agree)
 
@@ -164,14 +164,14 @@ Keep in mind, that sequence  `\"` will escape double quotes. So `"D:\"`, `"D:\an
 
 
 ```
-ems-cmd upload http://192.168.100.200:6330 -space Default -source D:\your\local\folder\file.xml -destination \
-ems-cmd upload http://192.168.100.200:6330 -space Default -source D:\your\local\folder\file2.xml -destination "folder 2"
-ems-cmd upload http://192.168.100.200:6330 -space Default -source D:\your\local\folder\file2.xml -destination "folder 2\sub folder"
-ems-cmd upload http://192.168.100.200:6330 -space Default -source "D:\local\folder with spaces" -destination "folder 2\sub folder"
+ems-cmd upload http://192.168.100.200:6330 -space Default -source D:\your\local\folder\file.xml -target \
+ems-cmd upload http://192.168.100.200:6330 -space Default -source D:\your\local\folder\file2.xml -target "folder 2"
+ems-cmd upload http://192.168.100.200:6330 -space Default -source D:\your\local\folder\file2.xml -target "folder 2\sub folder"
+ems-cmd upload http://192.168.100.200:6330 -space Default -source "D:\local\folder with spaces" -target "folder 2\sub folder"
 ```
 ###### Parameters
 * `-space` - space name, e.g. `Default`
-* `-destination` - destination folder (remote folder, relative path in the space `-space`).
+* `-target` - destination folder (remote folder, relative path in the space `-space`).
 * `-source` - path to your local file
 * `/y` - overwrite existing file (silent agree)
 
@@ -186,11 +186,11 @@ Operation completed
 This command will delete remote file
 
 ```
-ems-cmd del http://192.168.100.200:6330 -space Default -destination "folder 2\file.xml" 
+ems-cmd del http://192.168.100.200:6330 -space Default -target "folder 2\file.xml" 
 ```
 ###### Parameters
 * `-space` - space name, e.g. `Default`
-* `-destination` - relative path in the space `-space` to file 
+* `-target` - relative path in the space `-space` to file 
 
 ## License 
 

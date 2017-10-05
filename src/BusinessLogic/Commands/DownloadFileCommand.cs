@@ -24,9 +24,9 @@ namespace MorphCmd.BusinessLogic.Commands
         public async Task Execute(Parameters parameters)
         {
 
-            if (string.IsNullOrWhiteSpace(parameters.Destination))
+            if (string.IsNullOrWhiteSpace(parameters.Target))
             {
-                throw new WrongCommandFormatException("Destination is required");
+                throw new WrongCommandFormatException("Target is required");
             }
             if (string.IsNullOrWhiteSpace(parameters.Source))
             {
@@ -37,12 +37,12 @@ namespace MorphCmd.BusinessLogic.Commands
                 throw new WrongCommandFormatException("Space is required");
             }
 
-            if (!Directory.Exists(parameters.Destination))
+            if (!Directory.Exists(parameters.Target))
             {
-                throw new Exception(string.Format("Destination directory {0} not found", parameters.Destination));
+                throw new Exception(string.Format("Target directory {0} not found", parameters.Target));
             }
 
-            _output.WriteInfo(string.Format("Downloading file '{0}' from space '{1}' into '{2}'...", parameters.Source, parameters.Space, parameters.Destination));
+            _output.WriteInfo(string.Format("Downloading file '{0}' from space '{1}' into '{2}'...", parameters.Source, parameters.Space, parameters.Target));
 
             ProgressBar progress = new ProgressBar(_output, 40);
             _apiClient.FileProgress += (object sender, FileEventArgs e) =>
@@ -64,7 +64,7 @@ namespace MorphCmd.BusinessLogic.Commands
             };
 
             var tempFile = Guid.NewGuid().ToString("D") + ".tmp";
-            tempFile = Path.Combine(parameters.Destination, tempFile);
+            tempFile = Path.Combine(parameters.Target, tempFile);
 
             string destFileName = null;
             var allowLoading = false;
@@ -76,7 +76,7 @@ namespace MorphCmd.BusinessLogic.Commands
                     {
                         await _apiClient.DownloadFileAsync(parameters.Space, parameters.Source, (fileInfo) =>
                         {
-                            destFileName = Path.Combine(parameters.Destination, fileInfo.FileName);
+                            destFileName = Path.Combine(parameters.Target, fileInfo.FileName);
 
                             if (!parameters.YesToAll && File.Exists(destFileName))
                                 throw new FileExistsException("File already exists");
@@ -90,7 +90,7 @@ namespace MorphCmd.BusinessLogic.Commands
                         allowLoading = false;
                         if (!_output.IsOutputRedirected)
                         {
-                            _output.WriteInfo(string.Format("Destination file '{0}' already exists. Would you like to overwrite it? Y/N", destFileName));
+                            _output.WriteInfo(string.Format("Target file '{0}' already exists. Would you like to overwrite it? Y/N", destFileName));
                             _output.WriteInfo("You may pass /y parameter to overwrite file without any questions");
                             var answer = _input.ReadLine();
                             if (answer.Trim().ToLowerInvariant().StartsWith("y"))

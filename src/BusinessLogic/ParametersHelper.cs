@@ -19,7 +19,10 @@ namespace MorphCmd.BusinessLogic
             if (paramsDict.ContainsKey("source"))
                 parameters.Source = paramsDict["source"];
             if (paramsDict.ContainsKey("destination"))
-                parameters.Destination = paramsDict["destination"];
+                parameters.Target = paramsDict["destination"];
+            if (paramsDict.ContainsKey("target"))
+                parameters.Target = paramsDict["target"];
+
             if (paramsDict.ContainsKey("location"))
                 parameters.Location = paramsDict["location"];
 

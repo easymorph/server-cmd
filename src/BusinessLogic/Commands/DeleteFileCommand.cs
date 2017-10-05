@@ -19,13 +19,13 @@ namespace MorphCmd.BusinessLogic.Commands
 
         public async Task Execute(Parameters parameters)
         {
-            if (string.IsNullOrWhiteSpace(parameters.Destination))
+            if (string.IsNullOrWhiteSpace(parameters.Target))
             {
-                throw new WrongCommandFormatException("Destination is required");
+                throw new WrongCommandFormatException("Target is required");
             }
 
-            _output.WriteInfo(string.Format("Deleting file {0} in space {1}...", parameters.Destination, parameters.Space ?? "Default"));
-            await _apiClient.DeleteFileAsync(parameters.Space, parameters.Destination, null, _cancellationTokenSource.Token);
+            _output.WriteInfo(string.Format("Deleting file {0} in space {1}...", parameters.Target, parameters.Space ?? "Default"));
+            await _apiClient.DeleteFileAsync(parameters.Space, parameters.Target, null, _cancellationTokenSource.Token);
             _output.WriteInfo("Operation completed");
 
         }

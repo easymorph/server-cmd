@@ -28,13 +28,13 @@ namespace MorphCmd.BusinessLogic.Commands
                 throw new WrongCommandFormatException("Source is required");
             }
 
-            if (string.IsNullOrWhiteSpace(parameters.Destination))
+            if (string.IsNullOrWhiteSpace(parameters.Target))
             {
                 _output.WriteInfo(string.Format("Uploading file '{0}' to the root folder of space '{1}'...", parameters.Source, parameters.Space ?? "Default"));
             }
             else
             {
-                _output.WriteInfo(string.Format("Uploading file '{0}' to folder '{1}' of space '{2}'...", parameters.Source, parameters.Destination, parameters.Space ?? "Default"));
+                _output.WriteInfo(string.Format("Uploading file '{0}' to folder '{1}' of space '{2}'...", parameters.Source, parameters.Target, parameters.Space ?? "Default"));
             }
 
             if (!File.Exists(parameters.Source))
@@ -64,7 +64,7 @@ namespace MorphCmd.BusinessLogic.Commands
 
             };
 
-            var browsing = await _apiClient.BrowseSpaceAsync(parameters.Space, parameters.Destination, _cancellationTokenSource.Token);
+            var browsing = await _apiClient.BrowseSpaceAsync(parameters.Space, parameters.Target, _cancellationTokenSource.Token);
             if (!browsing.CanUploadFiles)
             {
                 throw new Exception("Uploading to this space is disabled");
@@ -75,7 +75,7 @@ namespace MorphCmd.BusinessLogic.Commands
             {
                 // don't care if file exists. 
                 _output.WriteInfo(string.Format("YES key was passed. File will be overridden if it already exists"));
-                await _apiClient.UploadFileAsync(parameters.Space, parameters.Source, parameters.Destination, _cancellationTokenSource.Token, overwriteFileifExists: true);
+                await _apiClient.UploadFileAsync(parameters.Space, parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteFileifExists: true);
             }
             else
             {
@@ -85,7 +85,7 @@ namespace MorphCmd.BusinessLogic.Commands
                 {
                     if (_output.IsOutputRedirected)
                     {
-                        _output.WriteError(string.Format("Unable to upload file '{0}' due to file already exists. Use /y to override it ", parameters.Destination));
+                        _output.WriteError(string.Format("Unable to upload file '{0}' due to file already exists. Use /y to override it ", parameters.Target));
                     }
                     else
                     {
@@ -95,7 +95,7 @@ namespace MorphCmd.BusinessLogic.Commands
                         if (answer.Trim().ToLowerInvariant().StartsWith("y"))
                         {
                             _output.WriteInfo("Uploading file...");
-                            await _apiClient.UploadFileAsync(parameters.Space, parameters.Source, parameters.Destination, _cancellationTokenSource.Token, overwriteFileifExists: true);
+                            await _apiClient.UploadFileAsync(parameters.Space, parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteFileifExists: true);
                             _output.WriteInfo("Operation complete");
                         }
                         else
@@ -106,7 +106,7 @@ namespace MorphCmd.BusinessLogic.Commands
                 }
                 else
                 {
-                    await _apiClient.UploadFileAsync(parameters.Space, parameters.Source, parameters.Destination, _cancellationTokenSource.Token, overwriteFileifExists: false);
+                    await _apiClient.UploadFileAsync(parameters.Space, parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteFileifExists: false);
                 }
 
             }
