@@ -136,7 +136,7 @@ In any case, you may use parameter `/y` to overwrite existing file without any p
 
 
 Be careful with folders that contain spaces in their names. You should add quotation marks around such parameter values. 
-Keep in mind, that sequence  `\"` will escape double quotes. So `"D:\"`, `"D:\another folder\"` are incorrect, use `D:\` and `"D:\another folder"` instead.
+Keep in mind, that sequence  `\"` will escape double quotes. So don't use it at the end of the parameter value.
 
 ```
 ems-cmd download http://192.168.100.200:6330 -space Default -target D:\your\local\folder -source file.xml 
@@ -166,7 +166,7 @@ In any case, you may use parameter `/y` to overwrite existing file without any p
 
 
 Be careful with folders that contain spaces in their names. You should add quotation marks around such parameter values. 
-Keep in mind, that sequence  `\"` will escape double quotes. So `"D:\"`, `"D:\another folder\"` are incorrect, use `D:\` and `"D:\another folder"` instead.
+Keep in mind, that sequence  `\"` will escape double quotes. So don't use it at the end of the parameter value.
 
 
 ```
