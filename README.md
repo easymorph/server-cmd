@@ -9,6 +9,12 @@ EasyMorph Server Command Line Client (in further text – **ems-cmd**) allows yo
 3. [EasyMorph Server 1.2](http://easymorph.com/server.html) or higher (installed on a separate PC)
 
 
+#### Download
+ems-cmd comes together with EasyMorph Server. Also it can be [downloaded](https://github.com/easymorph/server-cmd/releases) separately 
+ 
+Current version is 1.2.0. 
+
+
 #### General command format:
 
 ```
