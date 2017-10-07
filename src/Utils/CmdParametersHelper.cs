@@ -32,9 +32,9 @@ namespace MorphCmd.Utils
                 }
                 return result;
             }
-            catch (InvalidOperationException)
+            catch (Exception e)
             {
-                return null;
+                throw new Exception("Unable to parse command parameters:" + e.Message);
             }          
         }
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MorphCmd.BusinessLogic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +9,14 @@ namespace MorphCmd.Models
 {
     public class Parameters
     {
-        public string Command { get; set; }
+        public Command Command { get; set; }
         public string Space { get; set; }
-        public string From { get; set; }
-        public string To { get; set; }
+        public string Source { get; set; }
+        public string Target { get; set; }
         public string Location { get; set; }
-        public string File { get; set; }
+        
         public Guid? TaskId { get; set; }
         public bool YesToAll { get; set; }
+        public string Host { get; set; }
     }
 }

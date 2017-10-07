@@ -1,14 +1,15 @@
-### Introduction
+## Introduction
 
 EasyMorph Server Command Line Client (in further text – **ems-cmd**) allows you to run server commands via REST API.
 
 
-### Requirements
-1. OS Windows with .Net 4.5 or later
-2. Morph.Server.Sdk.dll (deployed together with ems-cmd).  
+#### Requirements
+1. OS Windows x86/x64  with .Net 4.5 or later
+2. Morph.Server.Sdk.dll (deployed together with ems-cmd). Also [hosted on github](https://github.com/easymorph/server-sdk)  
+3. [EasyMorph Server 1.2](http://easymorph.com/server.html) or higher (installed on a separate PC)
 
 
-General command format:
+#### General command format:
 
 ```
 ems-cmd <commad> <host> -param1 value1 -param2 "value two"
@@ -20,6 +21,12 @@ where
 + **```<command>```** - command to execute. See [Commands](#commands) section for details.
 +  **```<host>```** - Server host like `http://192.168.100.200:6330`.
   
+
+#### exit codes
+ems-cmd  may return one of the following exit codes:
+* `0` ems-cmd was successfully run to completion.
+* `1` A fatal error occurred during command parsing or execution.
+
 
 
 ### Commands
@@ -114,20 +121,27 @@ Listing done
 ```
 
 
-#### Download the file
+#### Download file
 This command will download one single file from server
 
 If local file already exists, you will be prompted to overwrite it. 
 Notice, that when you are using a redirected output (e.g. to the file) and local file already exists, download will fail. 
 In any case, you may use parameter `/y` to overwrite existing file without any prompts.
 
+
+Be careful with folders that contain spaces in their names. You should add quotation marks around such parameter values. 
+Keep in mind, that sequence  `\"` will escape double quotes. So `"D:\"`, `"D:\another folder\"` are incorrect, use `D:\` and `"D:\another folder"` instead.
+
 ```
-ems-cmd download http://192.168.100.200:6330 -space Default -to "D:\your\local\folder" -from "server\folder\file.xml" 
+ems-cmd download http://192.168.100.200:6330 -space Default -target D:\your\local\folder -source file.xml 
+ems-cmd download http://192.168.100.200:6330 -space Default -target D:\your\local\folder -source \file.xml
+ems-cmd download http://192.168.100.200:6330 -space Default -target D:\your\local\folder -source \server\folder\file.xml
+ems-cmd download http://192.168.100.200:6330 -space Default -target "D:\local\folder with spaces" -source "server\folder with spaces\file3.xml" 
 ```
 ###### Parameters
 * `-space` - space name, e.g. `Default`
-* `-to` - destination folder (you local folder).
-* `-from` - relative path to file in the space `-space`
+* `-target` - destination folder (you local folder).
+* `-source` - relative path to file in the space `-space`
 * `/y` - overwrite existing file (silent agree)
 
 ###### Output
@@ -137,20 +151,28 @@ Operation completed
 ```
 
 
-#### Upload the file
+#### Upload file
 This command will upload one single to server
 
 If remote file already exists, you will be prompted to overwrite it. 
 Notice, that when you are using a redirected output (e.g. to the file) and remote file already exists, upload will fail. 
 In any case, you may use parameter `/y` to overwrite existing file without any prompts.
 
+
+Be careful with folders that contain spaces in their names. You should add quotation marks around such parameter values. 
+Keep in mind, that sequence  `\"` will escape double quotes. So `"D:\"`, `"D:\another folder\"` are incorrect, use `D:\` and `"D:\another folder"` instead.
+
+
 ```
-ems-cmd upload http://192.168.100.200:6330 -space Default -from "D:\your\local\folder\file.xml" -to "\" 
+ems-cmd upload http://192.168.100.200:6330 -space Default -source D:\your\local\folder\file.xml -target \
+ems-cmd upload http://192.168.100.200:6330 -space Default -source D:\your\local\folder\file2.xml -target "folder 2"
+ems-cmd upload http://192.168.100.200:6330 -space Default -source D:\your\local\folder\file2.xml -target "folder 2\sub folder"
+ems-cmd upload http://192.168.100.200:6330 -space Default -source "D:\local\folder with spaces" -target "folder 2\sub folder"
 ```
 ###### Parameters
 * `-space` - space name, e.g. `Default`
-* `-to` - destination folder (remote folder, relative path in the space `-space`).
-* `-from` - path to your local file
+* `-target` - destination folder (remote folder, relative path in the space `-space`).
+* `-source` - path to your local file
 * `/y` - overwrite existing file (silent agree)
 
 ###### Output
@@ -164,13 +186,15 @@ Operation completed
 This command will delete remote file
 
 ```
-ems-cmd del http://192.168.100.200:6330 -space Default -file "folder 2\file.xml" 
+ems-cmd del http://192.168.100.200:6330 -space Default -target "folder 2\file.xml" 
 ```
 ###### Parameters
 * `-space` - space name, e.g. `Default`
-* `-file` - relative path in the space `-space` to the file
+* `-target` - relative path in the space `-space` to file 
 
+## License 
 
+**ems-cmd** is licensed under the [MIT license](https://github.com/easymorph/server-cmd/blob/master/LICENSE).
 
 
 
