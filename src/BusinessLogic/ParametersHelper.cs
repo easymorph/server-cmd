@@ -28,6 +28,26 @@ namespace MorphCmd.BusinessLogic
 
             if (paramsDict.ContainsKey("y"))
                 parameters.YesToAll = true;
+
+            var runTaskParameters = paramsDict.Keys.Where(x => x.StartsWith("param:")).ToArray();
+            foreach(var p in runTaskParameters)
+            {
+                var split = p.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                var wrongFormat = split.Length != 2;
+                string name = null;
+                if (!wrongFormat)
+                {
+                    name = split[1];
+                }
+
+                if (string.IsNullOrWhiteSpace(name) || wrongFormat)
+                {
+                    throw new Exception("Malformed task parameter value. Expected something like -param:SomeDate 2015-02-11 -param:\"File name\" \"C:\\My Documents\\input.csv\"" );
+                }
+                parameters.TaskRunParameters.Add( new TaskRunParameter(name, paramsDict[p]));               
+            }
+
+
             if (paramsDict.ContainsKey("taskid"))
             {
                 Guid guid;

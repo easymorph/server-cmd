@@ -1,4 +1,5 @@
 ﻿using Morph.Server.Sdk.Client;
+using Morph.Server.Sdk.Model;
 using MorphCmd.Exceptions;
 using MorphCmd.Interfaces;
 using MorphCmd.Models;
@@ -23,15 +24,29 @@ namespace MorphCmd.BusinessLogic.Commands
             {
                 throw new WrongCommandFormatException("TaskId is required");
             }
-            _output.WriteInfo("Attempting to start task " + parameters.TaskId.Value.ToString("D"));
+            if (string.IsNullOrWhiteSpace(parameters.Space))
+            {
+                throw new WrongCommandFormatException("Space is required");
+            }
 
-            var status = await _apiClient.GetTaskStatusAsync( parameters.TaskId.Value, _cancellationTokenSource.Token);
+            
+            _output.WriteInfo("Attempting to start task " + parameters.TaskId.Value.ToString("D"));
+            foreach(var parameter in parameters.TaskRunParameters)
+            {
+                _output.WriteInfo($"Parameter '{parameter.Name}'={parameter.Value}");
+            }
+
+            var status = await _apiClient.GetTaskStatusAsync( parameters.Space, parameters.TaskId.Value, _cancellationTokenSource.Token);
             if (status.IsRunning)
             {
                 throw new Exception($"Task {parameters.TaskId.Value.ToString("D")} is already running. Exiting");
             }
 
-            var info = await _apiClient.StartTaskAsync(parameters.Space, parameters.TaskId.Value, _cancellationTokenSource.Token);
+            var info = await _apiClient.StartTaskAsync(
+                parameters.Space,
+                parameters.TaskId.Value,
+                _cancellationTokenSource.Token, 
+                parameters.TaskRunParameters.Select(x=> new TaskStringParameter(x.Name,x.Value)).ToArray());
 
             _output.WriteInfo(string.Format("Project '{0}' is running. Waiting until done.", info.ProjectName));
 
@@ -39,8 +54,8 @@ namespace MorphCmd.BusinessLogic.Commands
             {
                 await Task.Delay(TimeSpan.FromSeconds(1));
             }
-            while ((status = await _apiClient.GetTaskStatusAsync(parameters.TaskId.Value, _cancellationTokenSource.Token)).IsRunning);
-            if (status.TaskState != Morph.Server.Sdk.Model.TaskState.Failed)
+            while ((status = await _apiClient.GetTaskStatusAsync(parameters.Space, parameters.TaskId.Value, _cancellationTokenSource.Token)).IsRunning);
+            if (status.TaskState != TaskState.Failed)
             {
                 _output.WriteInfo(string.Format("\nTask {0} completed", parameters.TaskId.Value.ToString("D")));
             }

@@ -18,5 +18,27 @@ namespace MorphCmd.Models
         public Guid? TaskId { get; set; }
         public bool YesToAll { get; set; }
         public string Host { get; set; }
+        public List<TaskRunParameter> TaskRunParameters { get; set; }
+        public Parameters()
+        {
+            TaskRunParameters = new List<TaskRunParameter>();
+        }
+    }
+
+    public class TaskRunParameter
+    {
+        public string Name{ get; set; }
+        public string Value { get; set; }
+
+        public TaskRunParameter(string name, string value)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("message", nameof(name));
+            }
+
+            this.Name = name;
+            this.Value = value;
+        }
     }
 }
