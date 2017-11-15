@@ -1,5 +1,7 @@
 ﻿using Morph.Server.Sdk.Client;
+using Morph.Server.Sdk.Model;
 using MorphCmd.Interfaces;
+using MorphCmd.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +30,23 @@ namespace MorphCmd.BusinessLogic.Commands
 
         protected void RequireParam(Guid? value)
         {
+
+        }
+
+        protected async Task<ApiSession> OpenSession(Parameters parameters)
+        {            
+            // If user set password - try to open session
+            // otherwise - construct anonymous session
+            if (string.IsNullOrWhiteSpace(parameters.Password))
+            {
+                var apiSession = await _apiClient.OpenSessionAnonymousAsync(parameters.SpaceName, _cancellationTokenSource.Token);
+                return apiSession;
+            }
+            else
+            {
+                var apiSession = await _apiClient.OpenSessionAsync(parameters.SpaceName, parameters.Password, _cancellationTokenSource.Token);
+                return apiSession;
+            }
 
         }
 

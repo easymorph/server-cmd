@@ -15,7 +15,9 @@ namespace MorphCmd.BusinessLogic
             Parameters parameters = new Parameters();
             parameters.Host = host;
             if (paramsDict.ContainsKey("space"))
-                parameters.Space = paramsDict["space"];
+                parameters.SpaceName = paramsDict["space"];
+            if (paramsDict.ContainsKey("password"))
+                parameters.Password = paramsDict["password"];
             if (paramsDict.ContainsKey("source"))
                 parameters.Source = paramsDict["source"];
             if (paramsDict.ContainsKey("destination"))

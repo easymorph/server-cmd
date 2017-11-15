@@ -1,4 +1,5 @@
 ﻿using Morph.Server.Sdk.Client;
+using Morph.Server.Sdk.Model;
 using MorphCmd.Interfaces;
 using MorphCmd.Models;
 using System;
@@ -15,6 +16,8 @@ namespace MorphCmd.BusinessLogic.Commands
         {
 
         }
+
+        public bool IsApiSessionRequired => false;
 
         public async Task Execute(Parameters parameters)
         {
