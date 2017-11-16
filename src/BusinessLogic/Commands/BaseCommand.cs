@@ -34,12 +34,13 @@ namespace MorphCmd.BusinessLogic.Commands
         }
 
         protected async Task<ApiSession> OpenSession(Parameters parameters)
-        {            
-            // If user set password - try to open session
-            // otherwise - construct anonymous session
+        {
+            // for simplification we just check that user pass any password
+            // in more complex logic, call GetSpacesListAsync to and check isPublic property
+            // isPublic - means you need to open anon session, otherwise - open real session
             if (string.IsNullOrWhiteSpace(parameters.Password))
             {
-                var apiSession = await _apiClient.OpenSessionAnonymousAsync(parameters.SpaceName, _cancellationTokenSource.Token);
+                var apiSession = ApiSession.Anonymous(parameters.SpaceName);
                 return apiSession;
             }
             else
