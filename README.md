@@ -12,8 +12,6 @@ EasyMorph Server Command Line Client (in further text – **ems-cmd**) allows yo
 #### Download
 ems-cmd comes together with EasyMorph Server. Also it can be [downloaded](https://github.com/easymorph/server-cmd/releases) separately 
  
-Current version is 1.2.0. 
-
 
 #### General command format:
 
@@ -33,6 +31,13 @@ ems-cmd  may return one of the following exit codes:
 * `0` ems-cmd was successfully run to completion.
 * `1` A fatal error occurred during command parsing or execution.
 
+#### Authorization  
+For password protected spaces you should pass password via command parameter `-password`.
+```
+ems-cmd upload http://192.168.100.200:6330  -space Default -password your_password -source D:\your\local\folder\file.xml -target \
+```
+In the example above, a session will be opened for the specified space Default, of course if password was correct. In case of incorrect password or public spaces, error will be thrown.
+Some hash computations are applied to the password before it is sent to the server. 
 
 
 ### Commands
@@ -53,8 +58,50 @@ Retrieving server status...
 STATUS:
 StatusCode: OK
 StatusMessage: Server is OK
-ServerVersion:1.2.0.0
+ServerVersion:1.3.0.0
 ```
+
+
+#### Retrieve spaces list
+A list of all spaces will be displayed. This command doesn't require authorization.
+
+```bash
+ems-cmd listspaces http://192.168.100.200:6330 
+```
+###### Parameters
+This command has no additional parameters
+
+###### Output
+```
+Available spaces:
+* closed one
+  Default
+Listing done
+```
+Asterisk `*` means that the space requires an authorization.
+
+
+#### Space status
+Returns specified space status. This command may require authorization if space is password protected.
+
+```bash
+ems-cmd spacestatus http://192.168.100.200:6330 -space "closed one" -password some_password
+```
+###### Parameters
+
+* `-space` - space name.
+* `-password` - if password is required.
+
+###### Output
+```
+Checking space default status...
+Space: Default
+IsPublic: True
+Permissions: FilesList, FileDownload
+done
+```
+
+
 
 ### Tasks Related
 #### Start the task 
@@ -62,14 +109,35 @@ This command will start specified task and wait until it is done.
 
 To start the task you need to know space name and the task ID. 
 Make sure to check the task execution server log to determine task execution info.
+
+
 ```
 ems-cmd run http://192.168.100.200:6330 -space Default -taskID 59b824f0-4b81-453f-b9e0-1c58b97c9fb9
 ```
 ###### Parameters
 * `-space` - space name, e.g. `Default`
 * `-taskID` - task guid.
+* `-param:XXX ZZ` - set task parameter `XXX` with value `ZZ`.
 
 Task guid can be found in the browser location toolbar. E.g, if you have clicked on the edit task link, your browser location seems to be  `http://localhost:6330/default/tasks/edit/59b824f0-4b81-453f-b9e0-1c58b97c9fb9`, where `59b824f0-4b81-453f-b9e0-1c58b97c9fb9` - is a desired value
+
+If you want to pass (or override) parameters that were defined in  morph project, add `-param:XXX ZZ` to ems-cmd execution line. 
+Where `XXX`  is a parameter name and `ZZ` is a parameter value. 
+At least one space between  parameter name and parameter value is required.
+
+
+E.g. If you've defined parameter `Timeout` in your morph project, and want to set it to 73 use `-param:Timeout 73`. Pay attention, that parameters are case sensitive.
+
+
+Examples:
+
+
+Set parameter `Rounds` to `10` :   `-param:Timeout 73`
+
+Set parameter `Full name` to `John Smith` :   `-param:"Full name" "John Smith"`
+
+Set parameter `From Date` to  the `10th of December 2000` :   `-param:"From Date" "2000-12-10"`   (ISO 8601 date format)
+
 
 ###### Output
 ```
@@ -91,8 +159,27 @@ ems-cmd runasync http://192.168.100.200:6330 -space Default -taskID 59b824f0-4b8
 ###### Parameters
 * `-space` - space name, e.g. `Default`
 * `-taskID` - task guid.
+* `-param:XXX ZZ` - set task parameter `XXX` with value `ZZ`.
 
 Task guid can be found in the browser location toolbar. E.g, if you have clicked on the edit task link, your browser location seems to be  `http://localhost:6330/default/tasks/edit/59b824f0-4b81-453f-b9e0-1c58b97c9fb9`, where `59b824f0-4b81-453f-b9e0-1c58b97c9fb9` - is a desired value
+
+If you want to pass (or override) parameters that were defined in  morph project, add `-param:XXX ZZ` to ems-cmd execution line. 
+Where `XXX`  is a parameter name and `ZZ` is a parameter value. 
+At least one space between  parameter name and parameter value is required.
+
+
+E.g. If you've defined parameter `Timeout` in your morph project, and want to set it to 73 use `-param:Timeout 73`. Pay attention, that parameters are case sensitive.
+
+
+Examples:
+
+
+Set parameter `Rounds` to `10` :   `-param:Timeout 73`
+
+Set parameter `Full name` to `John Smith` :   `-param:"Full name" "John Smith"`
+
+Set parameter `From Date` to  the `10th of December 2000` :   `-param:"From Date" "2000-12-10"`   (ISO 8601 date format)
+
 
 ###### Output
 ```
