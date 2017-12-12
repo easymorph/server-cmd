@@ -16,7 +16,7 @@ using MorphCmd.Exceptions;
 
 namespace MorphCmd.BusinessLogic
 {
-    
+
     internal class CommandsHandler
     {
         private readonly IOutputEndpoint _output;
@@ -34,21 +34,33 @@ namespace MorphCmd.BusinessLogic
 
         }
         public async Task Handle(Parameters parameters)
-        {            
+        {
+            ApiSession apiSession = null;            
 
             var cmd = CommandsFactory.Construct(parameters.Command, _output, _input, _apiClient);
             try
             {
+                // if none space name was set - force to use 'default' space
+                if (string.IsNullOrWhiteSpace(parameters.SpaceName))
+                {
+                    parameters.SpaceName = "default";
+                }
+
                 await cmd.Execute(parameters);
             }
             catch (WrongCommandFormatException wrg)
             {
                 _output.WriteError("Wrong command format");
-                
+
                 RunUsageSamples.WriteCommadUsage(parameters.Command, _output);
 
                 throw;
             }
+            finally
+            {
+                apiSession?.Dispose();
+            }
+
 
         }
     }

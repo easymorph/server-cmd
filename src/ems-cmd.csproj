@@ -70,7 +70,9 @@
   <ItemGroup>
     <Compile Include="BusinessLogic\CommandsHandler.cs" />
     <Compile Include="BusinessLogic\Commands\BaseCommand.cs" />
-    <Compile Include="BusinessLogic\Commands\BrowseCommand.cs" />
+    <Compile Include="BusinessLogic\Commands\SpaceStatusCommand.cs" />
+    <Compile Include="BusinessLogic\Commands\ListSpacesCommand.cs" />
+    <Compile Include="BusinessLogic\Commands\BrowseFilesCommand.cs" />
     <Compile Include="BusinessLogic\Commands\CommandsFactory.cs" />
     <Compile Include="BusinessLogic\Commands\DeleteFileCommand.cs" />
     <Compile Include="BusinessLogic\Commands\DownloadFileCommand.cs" />

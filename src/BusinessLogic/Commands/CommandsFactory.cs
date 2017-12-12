@@ -24,13 +24,17 @@ namespace MorphCmd.BusinessLogic.Commands
                 case Command.Upload:
                     return new UploadFileCommand(output, input, apiClient);
                 case Command.Browse:
-                    return new BrowseCommand(output, input, apiClient);
+                    return new BrowseFilesCommand(output, input, apiClient);
                 case Command.Del:
                     return new DeleteFileCommand(output, input, apiClient);
                 case Command.Download:
                     return new DownloadFileCommand(output, input, apiClient);
                 case Command.ValidateTasks:
                     return new ValidateTasksCommand(output, input, apiClient);
+                case Command.ListSpaces:
+                    return new ListSpacesCommand(output, input, apiClient);
+                case Command.SpaceStatus:
+                    return new SpaceStatusCommand(output, input, apiClient);
                 default:
                     throw new Exception("Command not supported");
             }

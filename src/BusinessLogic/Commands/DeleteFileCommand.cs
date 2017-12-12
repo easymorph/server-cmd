@@ -1,4 +1,5 @@
 ﻿using Morph.Server.Sdk.Client;
+using Morph.Server.Sdk.Model;
 using MorphCmd.Exceptions;
 using MorphCmd.Interfaces;
 using MorphCmd.Models;
@@ -17,6 +18,8 @@ namespace MorphCmd.BusinessLogic.Commands
 
         }
 
+        public bool IsApiSessionRequired => true;
+
         public async Task Execute(Parameters parameters)
         {
             if (string.IsNullOrWhiteSpace(parameters.Target))
@@ -24,9 +27,12 @@ namespace MorphCmd.BusinessLogic.Commands
                 throw new WrongCommandFormatException("Target is required");
             }
 
-            _output.WriteInfo(string.Format("Deleting file {0} in space {1}...", parameters.Target, parameters.Space ?? "Default"));
-            await _apiClient.DeleteFileAsync(parameters.Space, parameters.Target, null, _cancellationTokenSource.Token);
-            _output.WriteInfo("Operation completed");
+            using (var apiSession = await OpenSession(parameters))
+            {
+                _output.WriteInfo(string.Format("Deleting file {0} in space {1}...", parameters.Target, apiSession.SpaceName));
+                await _apiClient.DeleteFileAsync(apiSession, parameters.Target, null, _cancellationTokenSource.Token);
+                _output.WriteInfo("Operation completed");
+            }
 
         }
     }

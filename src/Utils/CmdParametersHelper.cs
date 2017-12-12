@@ -21,6 +21,14 @@ namespace MorphCmd.Utils
                     if (param.StartsWith("-"))
                     {
                         var paramName = param.Substring(1).Trim().ToLowerInvariant();
+                        if (paramsQ.Count == 0)
+                            throw new Exception("Wrong formatted value for paramter " + paramName);
+
+                        if (paramName.StartsWith("param:"))
+                        {
+                            paramName = "param:" + param.Substring(1 + "param:".Length).Trim();
+                        }
+                       
                         var paramValue = paramsQ.Dequeue();
                         result[paramName] = paramValue;
                     }
@@ -34,7 +42,7 @@ namespace MorphCmd.Utils
             }
             catch (Exception e)
             {
-                throw new Exception("Unable to parse command parameters:" + e.Message);
+                throw new Exception("Unable to parse command parameters: " + e.Message);
             }          
         }
     }

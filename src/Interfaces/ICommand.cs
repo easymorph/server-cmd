@@ -1,4 +1,5 @@
-﻿using MorphCmd.Models;
+﻿using Morph.Server.Sdk.Model;
+using MorphCmd.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,6 @@ namespace MorphCmd.Interfaces
     internal interface ICommand
     {
         Task Execute(Parameters parameters);
+        
     }
 }

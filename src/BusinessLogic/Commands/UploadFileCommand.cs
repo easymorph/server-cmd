@@ -21,6 +21,8 @@ namespace MorphCmd.BusinessLogic.Commands
 
         }
 
+        public bool IsApiSessionRequired => true;
+
         public async Task Execute(Parameters parameters)
         {
             if (string.IsNullOrWhiteSpace(parameters.Source))
@@ -28,13 +30,14 @@ namespace MorphCmd.BusinessLogic.Commands
                 throw new WrongCommandFormatException("Source is required");
             }
 
+           
             if (string.IsNullOrWhiteSpace(parameters.Target))
             {
-                _output.WriteInfo(string.Format("Uploading file '{0}' to the root folder of space '{1}'...", parameters.Source, parameters.Space ?? "Default"));
+                _output.WriteInfo(string.Format("Uploading file '{0}' to the root folder of space '{1}'...", parameters.Source, parameters.SpaceName));
             }
             else
             {
-                _output.WriteInfo(string.Format("Uploading file '{0}' to folder '{1}' of space '{2}'...", parameters.Source, parameters.Target, parameters.Space ?? "Default"));
+                _output.WriteInfo(string.Format("Uploading file '{0}' to folder '{1}' of space '{2}'...", parameters.Source, parameters.Target, parameters.SpaceName));
             }
 
             if (!File.Exists(parameters.Source))
@@ -64,53 +67,55 @@ namespace MorphCmd.BusinessLogic.Commands
 
             };
 
-            var browsing = await _apiClient.BrowseSpaceAsync(parameters.Space, parameters.Target, _cancellationTokenSource.Token);
-            if (!browsing.CanUploadFiles)
+            using (var apiSession = await OpenSession(parameters))
             {
-                throw new Exception("Uploading to this space is disabled");
-            }
-
-
-            if (parameters.YesToAll)
-            {
-                // don't care if file exists. 
-                _output.WriteInfo(string.Format("YES key was passed. File will be overridden if it already exists"));
-                await _apiClient.UploadFileAsync(parameters.Space, parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteFileifExists: true);
-            }
-            else
-            {
-
-                var fileExists = browsing.FileExists(Path.GetFileName(parameters.Source));
-                if (fileExists)
+                var browsing = await _apiClient.BrowseSpaceAsync(apiSession, parameters.Target, _cancellationTokenSource.Token);
+                if (!browsing.CanUploadFiles)
                 {
-                    if (_output.IsOutputRedirected)
-                    {
-                        _output.WriteError(string.Format("Unable to upload file '{0}' due to file already exists. Use /y to override it ", parameters.Target));
-                    }
-                    else
-                    {
-                        _output.WriteInfo("Uploading file already exists. Would you like to override it? Y/N");
-                        _output.WriteInfo("You may pass /y parameter to override file without any questions");
-                        var answer = _input.ReadLine();
-                        if (answer.Trim().ToLowerInvariant().StartsWith("y"))
-                        {
-                            _output.WriteInfo("Uploading file...");
-                            await _apiClient.UploadFileAsync(parameters.Space, parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteFileifExists: true);
-                            _output.WriteInfo("Operation complete");
-                        }
-                        else
-                        {
-                            _output.WriteInfo("Operation canceled");
-                        }
-                    }
+                    throw new Exception("Uploading to this space is disabled");
+                }
+
+
+                if (parameters.YesToAll)
+                {
+                    // don't care if file exists. 
+                    _output.WriteInfo(string.Format("YES key was passed. File will be overridden if it already exists"));
+                    await _apiClient.UploadFileAsync(apiSession, parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteFileifExists: true);
                 }
                 else
                 {
-                    await _apiClient.UploadFileAsync(parameters.Space, parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteFileifExists: false);
+
+                    var fileExists = browsing.FileExists(Path.GetFileName(parameters.Source));
+                    if (fileExists)
+                    {
+                        if (_output.IsOutputRedirected)
+                        {
+                            _output.WriteError(string.Format("Unable to upload file '{0}' due to file already exists. Use /y to override it ", parameters.Target));
+                        }
+                        else
+                        {
+                            _output.WriteInfo("Uploading file already exists. Would you like to override it? Y/N");
+                            _output.WriteInfo("You may pass /y parameter to override file without any questions");
+                            var answer = _input.ReadLine();
+                            if (answer.Trim().ToLowerInvariant().StartsWith("y"))
+                            {
+                                _output.WriteInfo("Uploading file...");
+                                await _apiClient.UploadFileAsync(apiSession, parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteFileifExists: true);
+                                _output.WriteInfo("Operation complete");
+                            }
+                            else
+                            {
+                                _output.WriteInfo("Operation canceled");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        await _apiClient.UploadFileAsync(apiSession, parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteFileifExists: false);
+                    }
+
                 }
-
             }
-
         }
     }
 }

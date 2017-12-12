@@ -1,5 +1,6 @@
 ﻿using Morph.Server.Sdk.Client;
 using Morph.Server.Sdk.Exceptions;
+using Morph.Server.Sdk.Model;
 using MorphCmd.Exceptions;
 using MorphCmd.Interfaces;
 using MorphCmd.Models;
@@ -18,46 +19,46 @@ namespace MorphCmd.BusinessLogic.Commands
 
         }
 
+        public bool IsApiSessionRequired => true;
+
         public async Task Execute(Parameters parameters)
         {
             if (string.IsNullOrWhiteSpace(parameters.Location))
             {
                 throw new WrongCommandFormatException("Location is required");
             }
-            if (string.IsNullOrWhiteSpace(parameters.Space))
-            {
-                throw new WrongCommandFormatException("Space is required");
-            }
 
-            try
+            using (var apiSession = await OpenSession(parameters))
             {
-                _output.WriteInfo("Validating tasks for the project '" + parameters.Location + "'");
-                var result = await _apiClient.ValidateTasksAsync(parameters.Space, parameters.Location, _cancellationTokenSource.Token);
+                try
+                {
+                    _output.WriteInfo("Validating tasks for the project '" + parameters.Location + "'");
+                    var result = await _apiClient.ValidateTasksAsync(apiSession, parameters.Location, _cancellationTokenSource.Token);
 
-                if (result.FailedTasks.Count == 0)
-                {
-                    _output.WriteInfo("All tasks are valid");
-                }
-                else
-                {
-                    _output.WriteError(result.Message);
-                    foreach (var item in result.FailedTasks)
+                    if (result.FailedTasks.Count == 0)
                     {
-                        _output.WriteInfo(item.TaskId + ": " + item.Message + "@" + item.TaskApiUrl);
+                        _output.WriteInfo("All tasks are valid");
+                    }
+                    else
+                    {
+                        _output.WriteError(result.Message);
+                        foreach (var item in result.FailedTasks)
+                        {
+                            _output.WriteInfo(item.TaskId + ": " + item.Message + "@" + item.TaskApiUrl);
+                        }
                     }
                 }
-            }
 
-            catch (MorphApiBadArgumentException ba)
-            {
-                _output.WriteError(ba.Message);
-                foreach (var e in ba.Details)
+                catch (MorphApiBadArgumentException ba)
                 {
-                    _output.WriteInfo(e.Field + ": " + e.Message);
+                    _output.WriteError(ba.Message);
+                    foreach (var e in ba.Details)
+                    {
+                        _output.WriteInfo(e.Field + ": " + e.Message);
+                    }
+                    throw new CommandFailedException();
                 }
-                throw new CommandFailedException();
             }
-
         }
     }
 
