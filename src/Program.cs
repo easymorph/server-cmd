@@ -6,6 +6,7 @@ using MorphCmd.Utils;
 using MorphCmd.BusinessLogic;
 using System.IO;
 using MorphCmd.Models;
+using Morph.Server.Sdk.Exceptions;
 
 namespace MorphCmd
 {
@@ -43,25 +44,37 @@ namespace MorphCmd
                 foreach (var e in agr.InnerExceptions)
                 {
                     output.WriteError(e.Message);
+                    if(e is ResponseParseException rpe)
+                    {
+                        output.WriteError(rpe.ServerResponseString);
+                    }
+                    Exception inner = e.InnerException;
+                    if (inner != null)
+                    {
+                        while (inner.InnerException != null)
+                        {
+                            output.WriteError(inner.Message);
+                            inner = inner.InnerException;
+                        }
+                    }
                 }
                 Environment.Exit(1);
 
             }
             catch (Exception ex)
             {
+                output.WriteError(ex.Message);
                 Exception inner = ex.InnerException;
                 if (inner != null)
-                {
+                {                    
                     while (inner.InnerException != null)
                     {
+                        output.WriteError(inner.Message);
                         inner = inner.InnerException;
                     }
                 }
-                output.WriteError(ex.Message);
-                if (inner != null)
-                {
-                    output.WriteError(inner.Message);
-                }
+                
+                
                 Environment.Exit(1);
             }
         }

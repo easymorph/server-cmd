@@ -17,7 +17,8 @@ namespace MorphCmd.Models
         Del,
         ValidateTasks,
         ListSpaces,
-        SpaceStatus
+        SpaceStatus,
+        ListTasks
 
 
     }

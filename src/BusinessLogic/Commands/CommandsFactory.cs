@@ -35,6 +35,8 @@ namespace MorphCmd.BusinessLogic.Commands
                     return new ListSpacesCommand(output, input, apiClient);
                 case Command.SpaceStatus:
                     return new SpaceStatusCommand(output, input, apiClient);
+                case Command.ListTasks:
+                    return new ListTasksCommand(output, input, apiClient);
                 default:
                     throw new Exception("Command not supported");
             }
