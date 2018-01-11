@@ -104,6 +104,56 @@ done
 
 
 ### Tasks Related
+#### Tasks list
+This command will list all tasks in the space.
+```
+ems-cmd listtasks http://192.168.100.200:6330 -space Default
+```
+###### Parameters
+* `-space` - space name, e.g. `Default`
+
+###### Output
+```
+Listing tasks in the space default
+0c73012f-0704-44a2-a3f5-ae54df3edd05: wait
+235cc252-2eb2-4b6c-b6b4-7b92eabf5494: f
+f69efa25-b649-47d5-a5ff-3772358a8aec: wait
+Listing done
+```
+
+#### Getting task info
+Allows you to get an info about the task and parameters.
+
+```
+ems-cmd gettask  http://192.168.100.200:6330 -space Default -taskID 59b824f0-4b81-453f-b9e0-1c58b97c9fb9
+```
+###### Parameters
+* `-space` - space name, e.g. `Default`
+* `-taskID` - task guid.
+
+
+###### Output
+```
+Attempting to get task 59b824f0-4b81-453f-b9e0-1c58b97c9fb9 in space 'default'
+Info about task:
+Id:'59b824f0-4b81-453f-b9e0-1c58b97c9fb9'
+Name:'f'
+IsRunning:'False'
+Enabled:'True'
+Note:''
+ProjectPath:'C:\Users\Public\Documents\Morphs\f.morph'
+StatusText:'Idle'
+TaskState:'Idle'
+Task Parameters:
+Parameter 'ZText' = 'some text' [Text] (Note: ZText annotation)
+Parameter 'ZDate' = '2000-01-15' [Date] (Note: ZDate annotation)
+Parameter 'ZFile' = 'C:\Users\Public\Documents\Morphs\file.csv'
+[FilePath] (Note: ZFile annotation)
+Done
+```
+
+
+
 #### Start the task 
 This command will start specified task and wait until it is done. 
 
