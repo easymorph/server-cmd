@@ -10,6 +10,7 @@ namespace MorphCmd.Models
     {
         Run,
         RunAsync,
+        GetTask,
         Status,
         Upload,
         Browse,

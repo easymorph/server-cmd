@@ -71,6 +71,7 @@
     <Compile Include="BusinessLogic\CommandsHandler.cs" />
     <Compile Include="BusinessLogic\Commands\BaseCommand.cs" />
     <Compile Include="BusinessLogic\Commands\ListTasksCommand.cs" />
+    <Compile Include="BusinessLogic\Commands\GetTaskCommand.cs" />
     <Compile Include="BusinessLogic\Commands\SpaceStatusCommand.cs" />
     <Compile Include="BusinessLogic\Commands\ListSpacesCommand.cs" />
     <Compile Include="BusinessLogic\Commands\BrowseFilesCommand.cs" />
