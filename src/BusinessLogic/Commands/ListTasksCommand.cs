@@ -23,7 +23,7 @@ namespace MorphCmd.BusinessLogic.Commands
                 
                 foreach (var task in data.Items)
                 {
-                    _output.WriteInfo(string.Format("{0}: {1}", task.Id.ToString(), task.Name));
+                    _output.WriteInfo(string.Format("{0}: {1}", task.Id.ToString(), task.TaskName));
                 }
 
                 _output.WriteInfo("Listing done");

@@ -35,7 +35,7 @@ namespace MorphCmd.BusinessLogic.Commands
                 var task = await _apiClient.GetTaskAsync(apiSession, parameters.TaskId.Value, _cancellationTokenSource.Token);
                 _output.WriteInfo("Info about task:");
                 _output.WriteInfo(string.Format("Id:'{0}'", task.Id));
-                _output.WriteInfo(string.Format("Name:'{0}'", task.Name));
+                _output.WriteInfo(string.Format("Name:'{0}'", task.TaskName));
                 _output.WriteInfo(string.Format("IsRunning:'{0}'", task.IsRunning));                
                 _output.WriteInfo(string.Format("Enabled:'{0}'", task.Enabled));
                 _output.WriteInfo(string.Format("Note:'{0}'", task.Note));
