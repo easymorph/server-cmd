@@ -10,6 +10,7 @@ namespace MorphCmd.Models
     {
         Run,
         RunAsync,
+        GetTask,
         Status,
         Upload,
         Browse,
@@ -17,7 +18,8 @@ namespace MorphCmd.Models
         Del,
         ValidateTasks,
         ListSpaces,
-        SpaceStatus
+        SpaceStatus,
+        ListTasks
 
 
     }

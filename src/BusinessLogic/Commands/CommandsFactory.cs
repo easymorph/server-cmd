@@ -19,6 +19,8 @@ namespace MorphCmd.BusinessLogic.Commands
                     return new RunTaskAndWaitCommand(output, input, apiClient);
                 case Command.RunAsync:
                     return new RunTaskAndForgetCommand(output, input, apiClient);
+                case Command.GetTask:
+                    return new GetTaskCommand(output, input, apiClient);
                 case Command.Status:
                     return new ServerStatusCommand(output, input, apiClient);
                 case Command.Upload:
@@ -35,6 +37,8 @@ namespace MorphCmd.BusinessLogic.Commands
                     return new ListSpacesCommand(output, input, apiClient);
                 case Command.SpaceStatus:
                     return new SpaceStatusCommand(output, input, apiClient);
+                case Command.ListTasks:
+                    return new ListTasksCommand(output, input, apiClient);
                 default:
                     throw new Exception("Command not supported");
             }
