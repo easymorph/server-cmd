@@ -335,6 +335,13 @@ ems-cmd del http://192.168.100.200:6330 -space Default -target "folder 2\file.xm
 * `-space` - space name, e.g. `Default`
 * `-target` - relative path in the space `-space` to file 
 
+
+### SSL errors
+In case if you want to suppress ssl errors,  use additional parameter `/suppress-ssl-errors`.
+```
+ems-cmd del http://192.168.100.200:6330 -space Default -target "folder 2\file.xml" /suppress-ssl-errors 
+```
+
 ## License 
 
 **ems-cmd** is licensed under the [MIT license](https://github.com/easymorph/server-cmd/blob/master/LICENSE).
