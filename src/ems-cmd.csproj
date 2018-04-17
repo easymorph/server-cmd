@@ -93,6 +93,7 @@
     <Compile Include="Interfaces\IInputEndpoint.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Parameters.cs" />
+    <Compile Include="BusinessLogic\NetworkUtil.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Interfaces\IOutputEndpoint.cs" />

@@ -7,6 +7,7 @@ using MorphCmd.BusinessLogic;
 using System.IO;
 using MorphCmd.Models;
 using Morph.Server.Sdk.Exceptions;
+using System.Security.Authentication;
 
 namespace MorphCmd
 {
@@ -20,7 +21,7 @@ namespace MorphCmd
             var output = new ConsoleOutput();
             try
             {
-                
+
                 if (args.Length < 2)
                 {
                     RunUsageSamples.WriteCreds(output);
@@ -41,49 +42,51 @@ namespace MorphCmd
 
             catch (AggregateException agr)
             {
-                foreach (var e in agr.InnerExceptions)
+                foreach (var e in agr.Flatten().InnerExceptions)
                 {
-                    output.WriteError(e.Message);
-                    if(e is ResponseParseException rpe)
-                    {
-                        output.WriteError(rpe.ServerResponseString);
-                    }
-                    Exception inner = e.InnerException;
-                    if (inner != null)
-                    {
-                        while (inner.InnerException != null)
-                        {
-                            output.WriteError(inner.Message);
-                            inner = inner.InnerException;
-                        }
-                    }
+                    TraverseExceptionTree(output, e);
                 }
                 Environment.Exit(1);
 
             }
             catch (Exception ex)
             {
-                output.WriteError(ex.Message);
-                Exception inner = ex.InnerException;
-                if (inner != null)
-                {                    
-                    while (inner.InnerException != null)
-                    {
-                        output.WriteError(inner.Message);
-                        inner = inner.InnerException;
-                    }
-                }
-                
-                
+                TraverseExceptionTree(output, ex);
+
                 Environment.Exit(1);
             }
         }
 
+        private static void TraverseExceptionTree(ConsoleOutput output, Exception e)
+        {
+            ProcessException(e, output);
+            Exception inner = e.InnerException;            
+            while (inner != null)
+            {
+                ProcessException(inner, output);
+                inner = inner.InnerException;
+            }
+            
+        }
+
+        static void ProcessException(Exception e, ConsoleOutput consoleOutput)
+        {
+            consoleOutput.WriteError(e.Message);
+            if (e is ResponseParseException rpe)
+            {
+                consoleOutput.WriteError(rpe.ServerResponseString);
+            }
+            if (e is System.Security.Authentication.AuthenticationException)
+            {
+                consoleOutput.WriteInfo("To prevent this error use a valid ssl certificate.");
+                consoleOutput.WriteInfo("To suppress this error use /suppress-ssl-errors parameter.");
+            }
+        }
 
 
         static async Task MainAsync(Parameters parameters)
         {
-
+            NetworkUtil.ConfigureServicePointManager(parameters.SuppressSslErrors);
             var apiClient = new MorphServerApiClient(parameters.Host);
             var output = new ConsoleOutput();
             var input = new ConsoleInput();
