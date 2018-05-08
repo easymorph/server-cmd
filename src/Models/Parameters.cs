@@ -20,6 +20,7 @@ namespace MorphCmd.Models
         public bool YesToAll { get; set; }
         public string Host { get; set; }
         public string Password { get; set; }
+        public bool SuppressSslErrors { get; set; }
         public List<TaskRunParameter> TaskRunParameters { get; set; }
         public Parameters()
         {

@@ -30,6 +30,10 @@ namespace MorphCmd.BusinessLogic
 
             if (paramsDict.ContainsKey("y"))
                 parameters.YesToAll = true;
+            if (paramsDict.ContainsKey("suppress-ssl-errors"))
+            {
+                parameters.SuppressSslErrors = true;
+            }
 
             var runTaskParameters = paramsDict.Keys.Where(x => x.StartsWith("param:")).ToArray();
             foreach(var p in runTaskParameters)

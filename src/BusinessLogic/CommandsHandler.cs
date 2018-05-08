@@ -48,7 +48,7 @@ namespace MorphCmd.BusinessLogic
 
                 await cmd.Execute(parameters);
             }
-            catch (WrongCommandFormatException wrg)
+            catch (WrongCommandFormatException)
             {
                 _output.WriteError("Wrong command format");
 
