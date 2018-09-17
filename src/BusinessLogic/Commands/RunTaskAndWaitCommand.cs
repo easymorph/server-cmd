@@ -21,6 +21,7 @@ namespace MorphCmd.BusinessLogic.Commands
         }
 
         public bool IsApiSessionRequired => true;
+        
 
         public async Task Execute(Parameters parameters)
         {            
