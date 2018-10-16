@@ -64,7 +64,12 @@ namespace MorphCmd.BusinessLogic.Commands
                     progress.Dispose();
                     progress = null;
                 }
-
+                else if(e.State == FileProgressState.Cancelled)
+                {                    
+                    progress.Dispose();
+                    progress = null;
+                    _output.WriteError("File upload canceled.");
+                }
             };
 
             using (var apiSession = await OpenSession(parameters))

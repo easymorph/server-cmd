@@ -19,6 +19,7 @@ namespace MorphCmd.BusinessLogic.Commands
         protected readonly IInputEndpoint _input;
         protected readonly IMorphServerApiClient _apiClient;
         protected readonly CancellationTokenSource _cancellationTokenSource;
+        public CancellationTokenSource CancellationTokenSource { get => _cancellationTokenSource; }
 
         public BaseCommand(IOutputEndpoint output, IInputEndpoint input, IMorphServerApiClient apiClient)
         {
