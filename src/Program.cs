@@ -59,12 +59,11 @@ namespace MorphCmd
 
         private static void TraverseExceptionTree(ConsoleOutput output, Exception e)
         {
-            ProcessException(e, output);
-            Exception inner = e.InnerException;            
-            while (inner != null)
-            {
-                ProcessException(inner, output);
-                inner = inner.InnerException;
+            Exception exception = e;
+            while (exception != null)
+            {                
+                ProcessException(exception, output);
+                exception= exception.InnerException;
             }
             
         }
