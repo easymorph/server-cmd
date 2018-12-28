@@ -46,7 +46,7 @@ namespace MorphCmd.BusinessLogic
                     parameters.SpaceName = "default";
                 }
 
-#if DEBUG
+#if false
                 await Task.Factory.StartNew (async () => { try { await cmd.Execute(parameters); } catch (Exception ex) { Console.WriteLine(ex.Message); } });
                 Console.ReadLine();
                 cmd.CancellationTokenSource.Cancel();
