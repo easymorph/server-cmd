@@ -35,7 +35,7 @@ namespace MorphCmd.BusinessLogic
 
             };
             // Allow SSL3. Default value is: Tls, Tls11, Tls12
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
         }
     }
 }
