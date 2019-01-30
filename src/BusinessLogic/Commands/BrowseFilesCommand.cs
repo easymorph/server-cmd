@@ -34,7 +34,7 @@ namespace MorphCmd.BusinessLogic.Commands
             using (var apiSession = await OpenSession(parameters))
             {
 
-                var data = await _apiClient.BrowseSpaceAsync(apiSession, parameters.Location, _cancellationTokenSource.Token);
+                var data = await _apiClient.SpaceBrowseAsync(apiSession, parameters.Location, _cancellationTokenSource.Token);
                 _output.WriteInfo("Space: " + data.SpaceName);
                 _output.WriteInfo("Free space: " + data.FreeSpaceBytes + " bytes");
                 foreach (var folder in data.Folders)
