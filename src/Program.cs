@@ -9,6 +9,9 @@ using MorphCmd.Models;
 using Morph.Server.Sdk.Exceptions;
 using System.Security.Authentication;
 using System.Net;
+#if NETCOREAPP2_0
+using System.Net.Http;
+#endif
 
 namespace MorphCmd
 {
@@ -79,7 +82,12 @@ namespace MorphCmd
                 consoleOutput.WriteError(e.Message);
                 consoleOutput.WriteError(rpe.ServerResponseString);
             }
-            else if (e is System.Security.Authentication.AuthenticationException)
+
+#if NETCOREAPP2_0
+            else if (e is HttpRequestException m && m.HResult == -2147012721)
+#elif NET45
+            else if (e is AuthenticationException)
+#endif
             {
                 consoleOutput.WriteError(e.Message);
                 consoleOutput.WriteInfo("To prevent this error use a valid ssl certificate.");
@@ -104,13 +112,24 @@ namespace MorphCmd
 
         static async Task MainAsync(Parameters parameters)
         {
-            NetworkUtil.ConfigureServicePointManager(parameters.SuppressSslErrors);
-            var apiClient = new MorphServerApiClient(parameters.Host);
-            var output = new ConsoleOutput();
-            var input = new ConsoleInput();
-            var handler = new CommandsHandler(output, input, apiClient);
-            await handler.Handle(parameters);
+            try
+            {
+                NetworkUtil.ConfigureServicePointManager(parameters.SuppressSslErrors);
+#if NETCOREAPP2_0
+                NetworkUtil.ConfigureServerCertificateCustomValidationCallback(parameters.SuppressSslErrors);
+#endif
+                //MorphServerApiClientGlobalConfig.FileTransferTimeout = TimeSpan.FromSeconds(2);
 
+                var apiClient = new MorphServerApiClient(parameters.Host);
+                var output = new ConsoleOutput();
+                var input = new ConsoleInput();
+                var handler = new CommandsHandler(output, input, apiClient);
+                await handler.Handle(parameters);
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
     }
 

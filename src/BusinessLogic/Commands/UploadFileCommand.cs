@@ -48,7 +48,7 @@ namespace MorphCmd.BusinessLogic.Commands
 
 
             ProgressBar progress = null;
-            _apiClient.OnFileDownloadProgress += (object sender, FileTransferProgressEventArgs e) =>
+            _apiClient.OnFileUploadProgress += (object sender, FileTransferProgressEventArgs e) =>
             {
                 if (e.State == FileProgressState.Starting)
                 {
@@ -74,53 +74,54 @@ namespace MorphCmd.BusinessLogic.Commands
 
             using (var apiSession = await OpenSession(parameters))
             {
-                throw new NotImplementedException();
-                //var browsing = await _apiClient.SpaceBrowseAsync(apiSession, parameters.Target, _cancellationTokenSource.Token);
-                //if (!browsing.CanUploadFiles)
-                //{
-                //    throw new Exception("Uploading to this space is disabled");
-                //}
+                var spaceBrowsing = await _apiClient.SpaceBrowseAsync(apiSession, parameters.Target, _cancellationTokenSource.Token); 
+                var spaceStatus = await _apiClient.GetSpaceStatusAsync(apiSession, _cancellationTokenSource.Token);
+                if (!spaceStatus.UserPermissions.Contains(UserSpacePermission.FileUpload))
+                {
+                    throw new Exception("Uploading to this space is disabled");
+                }
 
+                var transferUtility = new DataTransferUtility(_apiClient, apiSession);
 
-                //if (parameters.YesToAll)
-                //{
-                //    // don't care if file exists. 
-                //    _output.WriteInfo(string.Format("YES key was passed. File will be overridden if it already exists"));
-                //    await _apiClient.UploadFileAsync(apiSession, parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteFileifExists: true);
-                //}
-                //else
-                //{
+                if (parameters.YesToAll)
+                {
+                    // don't care if file exists. 
+                    _output.WriteInfo(string.Format("YES key was passed. File will be overridden if it already exists"));
+                    await transferUtility.SpaceUploadFileAsync(parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteExistingFile: true);
+                }
+                else
+                {
 
-                //    var fileExists = browsing.FileExists(Path.GetFileName(parameters.Source));
-                //    if (fileExists)
-                //    {
-                //        if (_output.IsOutputRedirected)
-                //        {
-                //            _output.WriteError(string.Format("Unable to upload file '{0}' due to file already exists. Use /y to override it ", parameters.Target));
-                //        }
-                //        else
-                //        {
-                //            _output.WriteInfo("Uploading file already exists. Would you like to override it? Y/N");
-                //            _output.WriteInfo("You may pass /y parameter to override file without any questions");
-                //            var answer = _input.ReadLine();
-                //            if (answer.Trim().ToLowerInvariant().StartsWith("y"))
-                //            {
-                //                _output.WriteInfo("Uploading file...");
-                //                await _apiClient.UploadFileAsync(apiSession, parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteFileifExists: true);
-                //                _output.WriteInfo("Operation complete");
-                //            }
-                //            else
-                //            {
-                //                _output.WriteInfo("Operation canceled");
-                //            }
-                //        }
-                //    }
-                //    else
-                //    {
-                //        await _apiClient.UploadFileAsync(apiSession, parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteFileifExists: false);
-                //    }
+                    var fileExists = spaceBrowsing.FileExists(Path.GetFileName(parameters.Source));
+                    if (fileExists)
+                    {
+                        if (_output.IsOutputRedirected)
+                        {
+                            _output.WriteError(string.Format("Unable to upload file '{0}' due to file already exists. Use /y to override it ", parameters.Target));
+                        }
+                        else
+                        {
+                            _output.WriteInfo("Uploading file already exists. Would you like to override it? Y/N");
+                            _output.WriteInfo("You may pass /y parameter to override file without any questions");
+                            var answer = _input.ReadLine();
+                            if (answer.Trim().ToLowerInvariant().StartsWith("y"))
+                            {
+                                _output.WriteInfo("Uploading file...");
+                                await transferUtility.SpaceUploadFileAsync(parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteExistingFile: true);
+                                _output.WriteInfo("Operation complete");
+                            }
+                            else
+                            {
+                                _output.WriteInfo("Operation canceled");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        await transferUtility.SpaceUploadFileAsync(parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteExistingFile: false);
+                    }
 
-                //}
+                }
             }
         }
     }

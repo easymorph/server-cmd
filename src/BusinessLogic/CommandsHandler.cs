@@ -35,6 +35,9 @@ namespace MorphCmd.BusinessLogic
         }
         public async Task Handle(Parameters parameters)
         {
+
+           
+
             ApiSession apiSession = null;            
 
             var cmd = CommandsFactory.Construct(parameters.Command, _output, _input, _apiClient);

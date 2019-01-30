@@ -29,7 +29,7 @@ namespace MorphCmd.BusinessLogic.Commands
                 var data = await _apiClient.GetSpaceStatusAsync(apiSession,  _cancellationTokenSource.Token);
                 _output.WriteInfo("Space: " + data.SpaceName);
                 _output.WriteInfo("IsPublic: " + data.IsPublic);
-                _output.WriteInfo("Permissions: " + string.Join(", ", data.SpacePermissions));                
+                _output.WriteInfo("Permissions: " + string.Join(", ", data.UserPermissions));                
 
                 _output.WriteInfo("done");
             }
