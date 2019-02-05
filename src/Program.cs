@@ -120,7 +120,7 @@ namespace MorphCmd
 #endif
                 //MorphServerApiClientGlobalConfig.FileTransferTimeout = TimeSpan.FromSeconds(2);
 
-                var apiClient = new MorphServerApiClient(parameters.Host);
+                var apiClient = new MorphServerApiClient(new Uri(parameters.Host));
                 var output = new ConsoleOutput();
                 var input = new ConsoleInput();
                 var handler = new CommandsHandler(output, input, apiClient);

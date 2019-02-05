@@ -30,7 +30,7 @@ namespace MorphCmd.BusinessLogic.Commands
                 throw new WrongCommandFormatException("Source is required");
             }
 
-           
+
             if (string.IsNullOrWhiteSpace(parameters.Target))
             {
                 _output.WriteInfo(string.Format("Uploading file '{0}' to the root folder of space '{1}'...", parameters.Source, parameters.SpaceName));
@@ -48,7 +48,7 @@ namespace MorphCmd.BusinessLogic.Commands
 
 
             ProgressBar progress = null;
-            _apiClient.OnFileUploadProgress += (object sender, FileTransferProgressEventArgs e) =>
+            _apiClient.OnDataUploadProgress += (object sender, FileTransferProgressEventArgs e) =>
             {
                 if (e.State == FileProgressState.Starting)
                 {
@@ -64,8 +64,8 @@ namespace MorphCmd.BusinessLogic.Commands
                     progress.Dispose();
                     progress = null;
                 }
-                else if(e.State == FileProgressState.Cancelled)
-                {                    
+                else if (e.State == FileProgressState.Cancelled)
+                {
                     progress.Dispose();
                     progress = null;
                     _output.WriteError("File upload canceled.");
@@ -74,53 +74,56 @@ namespace MorphCmd.BusinessLogic.Commands
 
             using (var apiSession = await OpenSession(parameters))
             {
-                var spaceBrowsing = await _apiClient.SpaceBrowseAsync(apiSession, parameters.Target, _cancellationTokenSource.Token); 
-                var spaceStatus = await _apiClient.GetSpaceStatusAsync(apiSession, _cancellationTokenSource.Token);
-                if (!spaceStatus.UserPermissions.Contains(UserSpacePermission.FileUpload))
-                {
-                    throw new Exception("Uploading to this space is disabled");
-                }
 
-                var transferUtility = new DataTransferUtility(_apiClient, apiSession);
-
-                if (parameters.YesToAll)
                 {
-                    // don't care if file exists. 
-                    _output.WriteInfo(string.Format("YES key was passed. File will be overridden if it already exists"));
-                    await transferUtility.SpaceUploadFileAsync(parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteExistingFile: true);
-                }
-                else
-                {
-
-                    var fileExists = spaceBrowsing.FileExists(Path.GetFileName(parameters.Source));
-                    if (fileExists)
+                    var spaceBrowsing = await _apiClient.SpaceBrowseAsync(apiSession, parameters.Target, _cancellationTokenSource.Token);
+                    var spaceStatus = await _apiClient.GetSpaceStatusAsync(apiSession, _cancellationTokenSource.Token);
+                    if (!spaceStatus.UserPermissions.Contains(UserSpacePermission.FileUpload))
                     {
-                        if (_output.IsOutputRedirected)
-                        {
-                            _output.WriteError(string.Format("Unable to upload file '{0}' due to file already exists. Use /y to override it ", parameters.Target));
-                        }
-                        else
-                        {
-                            _output.WriteInfo("Uploading file already exists. Would you like to override it? Y/N");
-                            _output.WriteInfo("You may pass /y parameter to override file without any questions");
-                            var answer = _input.ReadLine();
-                            if (answer.Trim().ToLowerInvariant().StartsWith("y"))
-                            {
-                                _output.WriteInfo("Uploading file...");
-                                await transferUtility.SpaceUploadFileAsync(parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteExistingFile: true);
-                                _output.WriteInfo("Operation complete");
-                            }
-                            else
-                            {
-                                _output.WriteInfo("Operation canceled");
-                            }
-                        }
+                        throw new Exception("Uploading to this space is disabled");
+                    }
+
+                    var transferUtility = new DataTransferUtility(_apiClient, apiSession);
+
+                    if (parameters.YesToAll)
+                    {
+                        // don't care if file exists. 
+                        _output.WriteInfo(string.Format("YES key was passed. File will be overridden if it already exists"));
+                        await transferUtility.SpaceUploadFileAsync(parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteExistingFile: true);
                     }
                     else
                     {
-                        await transferUtility.SpaceUploadFileAsync(parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteExistingFile: false);
-                    }
 
+                        var fileExists = spaceBrowsing.FileExists(Path.GetFileName(parameters.Source));
+                        if (fileExists)
+                        {
+                            if (_output.IsOutputRedirected)
+                            {
+                                _output.WriteError(string.Format("Unable to upload file '{0}' due to file already exists. Use /y to override it ", parameters.Target));
+                            }
+                            else
+                            {
+                                _output.WriteInfo("Uploading file already exists. Would you like to override it? Y/N");
+                                _output.WriteInfo("You may pass /y parameter to override file without any questions");
+                                var answer = _input.ReadLine();
+                                if (answer.Trim().ToLowerInvariant().StartsWith("y"))
+                                {
+                                    _output.WriteInfo("Uploading file...");
+                                    await transferUtility.SpaceUploadFileAsync(parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteExistingFile: true);
+                                    _output.WriteInfo("Operation complete");
+                                }
+                                else
+                                {
+                                    _output.WriteInfo("Operation canceled");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            await transferUtility.SpaceUploadFileAsync(parameters.Source, parameters.Target, _cancellationTokenSource.Token, overwriteExistingFile: false);
+                        }
+
+                    }
                 }
             }
         }

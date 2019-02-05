@@ -47,7 +47,7 @@ namespace MorphCmd.BusinessLogic.Commands
                 _output.WriteInfo(string.Format("Downloading file '{0}' from space '{1}' into '{2}'...", parameters.Source, apiSession.SpaceName, parameters.Target));
 
                 ProgressBar progress = new ProgressBar(_output, 40);
-                _apiClient.OnFileDownloadProgress += (object sender, FileTransferProgressEventArgs e) =>
+                _apiClient.OnDataDownloadProgress += (object sender, FileTransferProgressEventArgs e) =>
                 {
                     if (e.State == FileProgressState.Starting)
                     {
@@ -83,8 +83,10 @@ namespace MorphCmd.BusinessLogic.Commands
                         try
                         {
 
-                            using (var serverStreamingData = await _apiClient.SpaceDownloadFileAsync(apiSession, parameters.Source, _cancellationTokenSource.Token))
+                            using (var serverStreamingData = await _apiClient.SpaceOpenStreamingDataAsync(apiSession, parameters.Source, _cancellationTokenSource.Token))
+                                using(var reader = new BinaryReader(serverStreamingData.Stream))
                             {
+
                                 destFileName = Path.Combine(parameters.Target, serverStreamingData.FileName);
 
                                 if (!parameters.YesToAll && File.Exists(destFileName))
@@ -93,7 +95,7 @@ namespace MorphCmd.BusinessLogic.Commands
 
                                 await serverStreamingData.Stream.CopyToAsync(streamToWriteTo, 81920, _cancellationTokenSource.Token);
                             }
-                          
+
                         }
                         catch (FileExistsException)
                         {
@@ -122,7 +124,7 @@ namespace MorphCmd.BusinessLogic.Commands
                             if (allowLoading)
                             {
                                 _output.WriteInfo(string.Format("Downloading '{0}' ...", parameters.Source));
-                                using (var serverStreamingData = await _apiClient.SpaceDownloadFileAsync(apiSession, parameters.Source, _cancellationTokenSource.Token))
+                                using (var serverStreamingData = await _apiClient.SpaceOpenStreamingDataAsync(apiSession, parameters.Source, _cancellationTokenSource.Token))
                                 {
                                     await serverStreamingData.Stream.CopyToAsync(streamToWriteTo, 81920, _cancellationTokenSource.Token);
                                 }
