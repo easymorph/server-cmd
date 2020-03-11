@@ -1,7 +1,11 @@
-﻿using System;
+﻿using Morph.Server.Sdk.Client;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+#if NETCOREAPP2_0
+using System.Net.Http;
+#endif
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -35,7 +39,30 @@ namespace MorphCmd.BusinessLogic
 
             };
             // Allow SSL3. Default value is: Tls, Tls11, Tls12
+#if NET45
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+#else
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+#endif
         }
+
+#if NETCOREAPP2_0
+        internal static void ConfigureServerCertificateCustomValidationCallback(bool suppressSslErrors)
+        {
+
+            MorphServerApiClientGlobalConfig.ServerCertificateCustomValidationCallback = (request, certificate, chain, sslPolicyErrors) =>
+             {
+                 if (suppressSslErrors)
+                 {
+                     return (!sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateNotAvailable));
+                 }
+                 else
+                 {
+                     return !(sslFatalErrors.Any(x => sslPolicyErrors.HasFlag(x)));
+                 }
+             };
+            
+        }
+#endif
     }
 }

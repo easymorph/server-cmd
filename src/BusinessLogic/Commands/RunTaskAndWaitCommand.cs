@@ -13,31 +13,31 @@ namespace MorphCmd.BusinessLogic.Commands
 {
     internal class RunTaskAndWaitCommand : BaseCommand, ICommand
     {
-        
+
 
         public RunTaskAndWaitCommand(IOutputEndpoint output, IInputEndpoint input, IMorphServerApiClient apiClient) : base(output, input, apiClient)
         {
-            
+
         }
 
         public bool IsApiSessionRequired => true;
-        
+
 
         public async Task Execute(Parameters parameters)
-        {            
+        {
 
             if (parameters.TaskId == null)
             {
                 throw new WrongCommandFormatException("TaskId is required");
             }
-            _output.WriteInfo($"Attempting to start task {parameters.TaskId.Value.ToString("D")} in space '{parameters.SpaceName}'" );
+            _output.WriteInfo($"Attempting to start task {parameters.TaskId.Value.ToString("D")} in space '{parameters.SpaceName}'");
             foreach (var parameter in parameters.TaskRunParameters)
             {
                 _output.WriteInfo($"Parameter '{parameter.Name}' = '{parameter.Value}'");
             }
 
             using (var apiSession = await OpenSession(parameters))
-            {               
+            {
 
                 var status = await _apiClient.GetTaskStatusAsync(apiSession, parameters.TaskId.Value, _cancellationTokenSource.Token);
                 if (status.IsRunning)
@@ -47,9 +47,13 @@ namespace MorphCmd.BusinessLogic.Commands
 
                 var info = await _apiClient.StartTaskAsync(
                     apiSession,
-                    parameters.TaskId.Value,
-                    _cancellationTokenSource.Token,
-                    parameters.TaskRunParameters.Select(x => new TaskStringParameter(x.Name, x.Value)).ToArray());
+                    new StartTaskRequest()
+                    {
+                        TaskId = parameters.TaskId.Value,
+                        TaskParameters = parameters.TaskRunParameters.Select(x => new TaskStringParameter(x.Name, x.Value)).ToArray()
+                    },
+                    _cancellationTokenSource.Token);
+
 
                 _output.WriteInfo(string.Format("Project '{0}' is running. Waiting until done.", info.ProjectName));
 

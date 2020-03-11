@@ -47,7 +47,7 @@ namespace MorphCmd.BusinessLogic.Commands
                 _output.WriteInfo(string.Format("Downloading file '{0}' from space '{1}' into '{2}'...", parameters.Source, apiSession.SpaceName, parameters.Target));
 
                 ProgressBar progress = new ProgressBar(_output, 40);
-                _apiClient.FileProgress += (object sender, FileEventArgs e) =>
+                _apiClient.OnDataDownloadProgress += (object sender, FileTransferProgressEventArgs e) =>
                 {
                     if (e.State == FileProgressState.Starting)
                     {
@@ -82,16 +82,20 @@ namespace MorphCmd.BusinessLogic.Commands
                     {
                         try
                         {
-                            await _apiClient.DownloadFileAsync(apiSession, parameters.Source, (fileInfo) =>
+
+                            using (var serverStreamingData = await _apiClient.SpaceOpenStreamingDataAsync(apiSession, parameters.Source, _cancellationTokenSource.Token))
+                                using(var reader = new BinaryReader(serverStreamingData.Stream))
                             {
-                                destFileName = Path.Combine(parameters.Target, fileInfo.FileName);
+
+                                destFileName = Path.Combine(parameters.Target, serverStreamingData.FileName);
 
                                 if (!parameters.YesToAll && File.Exists(destFileName))
                                     throw new FileExistsException("File already exists");
                                 allowLoading = true;
-                                return true;
 
-                            }, streamToWriteTo, _cancellationTokenSource.Token);
+                                await serverStreamingData.Stream.CopyToAsync(streamToWriteTo, 81920, _cancellationTokenSource.Token);
+                            }
+
                         }
                         catch (FileExistsException)
                         {
@@ -120,10 +124,10 @@ namespace MorphCmd.BusinessLogic.Commands
                             if (allowLoading)
                             {
                                 _output.WriteInfo(string.Format("Downloading '{0}' ...", parameters.Source));
-                                await _apiClient.DownloadFileAsync(apiSession, parameters.Source, (fileInfo) =>
+                                using (var serverStreamingData = await _apiClient.SpaceOpenStreamingDataAsync(apiSession, parameters.Source, _cancellationTokenSource.Token))
                                 {
-                                    return true;
-                                }, streamToWriteTo, _cancellationTokenSource.Token);
+                                    await serverStreamingData.Stream.CopyToAsync(streamToWriteTo, 81920, _cancellationTokenSource.Token);
+                                }
                             }
                         }
 

@@ -24,7 +24,10 @@ namespace MorphCmd.BusinessLogic.Commands
             _output.WriteInfo("Retrieving server status...");
             var status = await _apiClient.GetServerStatusAsync(_cancellationTokenSource.Token);
             _output.WriteInfo("STATUS:");
-            _output.WriteInfo(string.Format("StatusCode: {0}\nStatusMessage: {1}\nServerVersion:{2}", status.StatusCode, status.StatusMessage, status.Version.ToString()));
+            _output.WriteInfo($"StatusCode: {status.StatusCode}");
+            _output.WriteInfo($"StatusMessage: {status.StatusMessage}");
+            _output.WriteInfo($"ServerVersion: {status.Version}");
+            _output.WriteInfo($"InstanceRunId: {status.InstanceRunId}");
 
         }
     }
