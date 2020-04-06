@@ -1,4 +1,5 @@
 ﻿using Morph.Server.Sdk.Client;
+using Morph.Server.Sdk.Exceptions;
 using Morph.Server.Sdk.Model;
 using MorphCmd.Interfaces;
 using MorphCmd.Models;
@@ -40,10 +41,24 @@ namespace MorphCmd.BusinessLogic.Commands
             // than open required session
 
             _output.WriteInfo("Opening session...");
-
-
-            var spacesListResult = await _apiClient.GetSpacesListAsync(_cancellationTokenSource.Token);
-            var desiredSpace = spacesListResult.Items.FirstOrDefault(x => x.SpaceName.Equals(parameters.SpaceName, StringComparison.OrdinalIgnoreCase));
+            SpaceEnumerationItem desiredSpace = null;
+            try
+            {
+                var spacesListResult = await _apiClient.GetSpacesListAsync(_cancellationTokenSource.Token);
+                desiredSpace = spacesListResult.Items.FirstOrDefault(x => x.SpaceName.Equals(parameters.SpaceName, StringComparison.OrdinalIgnoreCase));
+            }
+            catch (MorphApiForbiddenException)
+            {
+                // space listing is forbidden.
+                // tring to lookup
+                var lookupResonse = await _apiClient.SpacesLookupAsync(new SpacesLookupRequest() { SpaceNames = { parameters.SpaceName } }, _cancellationTokenSource.Token);
+                var lookup = lookupResonse.Values.First();
+                if (lookup.Error != null)
+                {
+                    throw new Exception($"Space lookup failed. {lookup.Error.Message}");
+                }
+                desiredSpace = lookup.Data;
+            }
             if (desiredSpace == null)
             {
                 throw new Exception($"Server has no space '{parameters.SpaceName}'");
