@@ -6,7 +6,7 @@ EasyMorph Server Command Line Client (in further text – **ems-cmd**) allows yo
 #### Requirements
 1. OS Windows x86/x64  with .Net 4.5 or later
 2. Morph.Server.Sdk.dll (deployed together with ems-cmd). Also [hosted on github](https://github.com/easymorph/server-sdk)  
-3. [EasyMorph Server 1.2](http://easymorph.com/server.html) or higher (installed on a separate PC)
+3. [EasyMorph Server 1.2](http://easymorph.com/server.html) or higher (installed on a separate machine)
 
 
 #### Download
@@ -42,7 +42,7 @@ Some hash computations are applied to the password before it is sent to the serv
 
 ### Commands
 
-### Server Related
+### Status and metadata
 
 #### Retrieve server status
 
@@ -62,7 +62,7 @@ ServerVersion:1.3.0.0
 ```
 
 
-#### Retrieve spaces list
+#### List spaces
 A list of all spaces will be displayed. This command doesn't require authorization.
 
 ```bash
@@ -103,8 +103,8 @@ done
 
 
 
-### Tasks Related
-#### Tasks list
+### Tasks
+#### List tasks
 This command will list all tasks in the space.
 ```
 ems-cmd listtasks http://192.168.100.200:6330 -space Default
@@ -121,8 +121,8 @@ f69efa25-b649-47d5-a5ff-3772358a8aec: wait
 Listing done
 ```
 
-#### Getting task info
-Allows you to get an info about the task and parameters.
+#### Get task metadata
+Allows obtaining metadata about a task and its settings.
 
 ```
 ems-cmd gettask  http://192.168.100.200:6330 -space Default -taskID 59b824f0-4b81-453f-b9e0-1c58b97c9fb9
@@ -154,11 +154,11 @@ Done
 
 
 
-#### Start the task 
-This command will start specified task and wait until it is done. 
+#### Start a task synchronously
+This command will start the specified task and wait until it is finished. 
 
-To start the task you need to know space name and the task ID. 
-Make sure to check the task execution server log to determine task execution info.
+To start the task you need to know the space name and the task ID. 
+See the task execution server log to determine task execution info.
 
 
 ```
@@ -197,7 +197,7 @@ Project 'sample.morph' is running. Waiting until done.
 Task 59b824f0-4b81-453f-b9e0-1c58b97c9fb9 completed
 ```
 
-#### Start task asynchronously (fire and forget)
+#### Start a task asynchronously (fire and forget)
 This command return control immediately after task was enqueued 
 
 
@@ -239,10 +239,10 @@ Project 'sample.morph' is running.
 
 
 
-### Files Related
+### Files
 
-#### Browsing files
-This command shows folder content
+#### Browse files
+This command shows the contents of a folder.
 
 ```
 ems-cmd browse http://192.168.100.200:6330 -space Default -location "\folder 2"
@@ -264,8 +264,8 @@ Listing done
 ```
 
 
-#### Download file
-This command will download one single file from server
+#### Download a file
+This command will download one single file from server.
 
 If local file already exists, you will be prompted to overwrite it. 
 Notice, that when you are using a redirected output (e.g. to the file) and local file already exists, download will fail. 
@@ -294,8 +294,8 @@ Operation completed
 ```
 
 
-#### Upload file
-This command will upload one single to server
+#### Upload a file
+This command will upload one single to Server.
 
 If remote file already exists, you will be prompted to overwrite it. 
 Notice, that when you are using a redirected output (e.g. to the file) and remote file already exists, upload will fail. 
@@ -325,8 +325,8 @@ Operation completed
 ```
 
 
-#### File deletion
-This command will delete remote file
+#### Delete file
+This command will delete a remote file.
 
 ```
 ems-cmd del http://192.168.100.200:6330 -space Default -target "folder 2\file.xml" 
