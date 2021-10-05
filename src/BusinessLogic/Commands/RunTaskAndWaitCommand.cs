@@ -38,38 +38,52 @@ namespace MorphCmd.BusinessLogic.Commands
 
             using (var apiSession = await OpenSession(parameters))
             {
-
-                var status = await _apiClient.GetTaskStatusAsync(apiSession, parameters.TaskId.Value, _cancellationTokenSource.Token);
-                if (status.IsRunning)
-                {
-                    throw new Exception($"Task {parameters.TaskId.Value.ToString("D")} is already running. Exiting");
-                }
-
-                var info = await _apiClient.StartTaskAsync(
+                ComputationDetailedItem info = await _apiClient.StartTaskAsync(
                     apiSession,
-                    new StartTaskRequest()
+                    new StartTaskRequest(parameters.TaskId.Value)
                     {
-                        TaskId = parameters.TaskId.Value,
                         TaskParameters = parameters.TaskRunParameters.Select(x => new TaskStringParameter(x.Name, x.Value)).ToArray()
                     },
                     _cancellationTokenSource.Token);
 
 
-                _output.WriteInfo(string.Format("Project '{0}' is running. Waiting until done.", info.ProjectName));
+                _output.WriteInfo(string.Format("Project '{0}' is running. Waiting until done.", info.ProjectDetails.ProjectName));
 
                 do
                 {
                     await Task.Delay(TimeSpan.FromSeconds(1));
                 }
-                while ((status = await _apiClient.GetTaskStatusAsync(apiSession, parameters.TaskId.Value, _cancellationTokenSource.Token)).IsRunning);
-                if (status.TaskState != TaskState.Failed)
+                while ((info = await _apiClient.GetComputationDetailsAsync(apiSession, info.ComputationId, _cancellationTokenSource.Token)).State.IsRunning);
+
+                if (info.State is ComputationState.Finished finished)
                 {
-                    _output.WriteInfo(string.Format("\nTask {0} completed", parameters.TaskId.Value.ToString("D")));
+
+                    var workflowResult = await _apiClient.GetWorkflowResultDetailsAsync(apiSession,
+                        finished.ResultObtainingToken, _cancellationTokenSource.Token);
+
+                    switch (workflowResult.Result)
+                    {
+                        case  WorkflowResultCode.Success:
+                            _output.WriteInfo(string.Format("\nTask {0} completed", parameters.TaskId.Value.ToString("D")));
+                            break;
+                            
+                        case  WorkflowResultCode.Failure:
+                            _output.WriteInfo(string.Format("\nTask {0} failed", parameters.TaskId.Value.ToString("D")));
+                            break;
+                        case  WorkflowResultCode.TimedOut:
+                            _output.WriteInfo(string.Format("\nTask {0} Timed out", parameters.TaskId.Value.ToString("D")));
+                            break;
+                        case  WorkflowResultCode.CanceledByUser:
+                            _output.WriteInfo(string.Format("\nTask {0} canceled by user", parameters.TaskId.Value.ToString("D")));
+                            break;
+                        default:
+                            _output.WriteInfo(string.Format("\nTask {0} finished with unknown state", parameters.TaskId.Value.ToString("D")));
+                            break;
+                            
+                    }
+
                 }
-                else
-                {
-                    _output.WriteInfo(string.Format("\nTask {0} failed", parameters.TaskId.Value.ToString("D")));
-                }
+                
             }
         }
     }
