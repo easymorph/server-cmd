@@ -60,26 +60,38 @@ namespace MorphCmd.BusinessLogic.Commands
 
                     var workflowResult = await _apiClient.GetWorkflowResultDetailsAsync(apiSession,
                         finished.ResultObtainingToken, _cancellationTokenSource.Token);
-
-                    switch (workflowResult.Result)
+                    try
                     {
-                        case  WorkflowResultCode.Success:
-                            _output.WriteInfo(string.Format("\nTask {0} completed", parameters.TaskId.Value.ToString("D")));
-                            break;
-                            
-                        case  WorkflowResultCode.Failure:
-                            _output.WriteInfo(string.Format("\nTask {0} failed", parameters.TaskId.Value.ToString("D")));
-                            break;
-                        case  WorkflowResultCode.TimedOut:
-                            _output.WriteInfo(string.Format("\nTask {0} Timed out", parameters.TaskId.Value.ToString("D")));
-                            break;
-                        case  WorkflowResultCode.CanceledByUser:
-                            _output.WriteInfo(string.Format("\nTask {0} canceled by user", parameters.TaskId.Value.ToString("D")));
-                            break;
-                        default:
-                            _output.WriteInfo(string.Format("\nTask {0} finished with unknown state", parameters.TaskId.Value.ToString("D")));
-                            break;
-                            
+                        switch (workflowResult.Result)
+                        {
+                            case WorkflowResultCode.Success:
+                                _output.WriteInfo(string.Format("\nTask {0} completed",
+                                    parameters.TaskId.Value.ToString("D")));
+                                break;
+
+                            case WorkflowResultCode.Failure:
+                                _output.WriteInfo(string.Format("\nTask {0} failed",
+                                    parameters.TaskId.Value.ToString("D")));
+                                break;
+                            case WorkflowResultCode.TimedOut:
+                                _output.WriteInfo(string.Format("\nTask {0} Timed out",
+                                    parameters.TaskId.Value.ToString("D")));
+                                break;
+                            case WorkflowResultCode.CanceledByUser:
+                                _output.WriteInfo(string.Format("\nTask {0} canceled by user",
+                                    parameters.TaskId.Value.ToString("D")));
+                                break;
+                            default:
+                                _output.WriteInfo(string.Format("\nTask {0} finished with unknown state",
+                                    parameters.TaskId.Value.ToString("D")));
+                                break;
+
+                        }
+                    }
+                    finally
+                    {
+                        await _apiClient.AcknowledgeWorkflowResultAsync(apiSession, info.ComputationId,
+                            _cancellationTokenSource.Token);
                     }
 
                 }
