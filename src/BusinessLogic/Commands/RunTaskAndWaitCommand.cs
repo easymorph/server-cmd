@@ -51,7 +51,7 @@ namespace MorphCmd.BusinessLogic.Commands
 
                 do
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(1));
+                    await Task.Delay(TimeSpan.FromSeconds(2));
                 }
                 while ((info = await _apiClient.GetComputationDetailsAsync(apiSession, info.ComputationId, _cancellationTokenSource.Token)).State.IsRunning);
 
@@ -72,18 +72,22 @@ namespace MorphCmd.BusinessLogic.Commands
                             case WorkflowResultCode.Failure:
                                 _output.WriteInfo(string.Format("\nTask {0} failed",
                                     parameters.TaskId.Value.ToString("D")));
+                                throw new CommandFailedException();
                                 break;
                             case WorkflowResultCode.TimedOut:
                                 _output.WriteInfo(string.Format("\nTask {0} Timed out",
                                     parameters.TaskId.Value.ToString("D")));
+                                throw new CommandFailedException();
                                 break;
                             case WorkflowResultCode.CanceledByUser:
                                 _output.WriteInfo(string.Format("\nTask {0} canceled by user",
                                     parameters.TaskId.Value.ToString("D")));
+                                throw new CommandFailedException();
                                 break;
                             default:
                                 _output.WriteInfo(string.Format("\nTask {0} finished with unknown state",
                                     parameters.TaskId.Value.ToString("D")));
+                                throw new CommandFailedException();
                                 break;
 
                         }
