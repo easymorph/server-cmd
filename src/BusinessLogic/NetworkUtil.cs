@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-#if NETCOREAPP3_1
+#if NETCOREAPP2_0
 using System.Net.Http;
 #endif
 using System.Net.Security;
@@ -46,7 +46,7 @@ namespace MorphCmd.BusinessLogic
 #endif
         }
 
-#if NETCOREAPP3_1
+#if NETCOREAPP2_0
         internal static void ConfigureServerCertificateCustomValidationCallback(bool suppressSslErrors)
         {
 
