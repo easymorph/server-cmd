@@ -36,15 +36,14 @@ namespace MorphCmd.BusinessLogic.Commands
             using (var apiSession = await OpenSession(parameters))
             {
 
-                var info = await _apiClient.StartTaskAsync(apiSession,
-                    new StartTaskRequest()
+                ComputationDetailedItem info = await _apiClient.StartTaskAsync(apiSession,
+                    new StartTaskRequest(parameters.TaskId.Value)
                     {
-                        TaskId = parameters.TaskId.Value,
                         TaskParameters = parameters.TaskRunParameters.Select(x => new TaskStringParameter(x.Name, x.Value)).ToArray()
                     },
                     _cancellationTokenSource.Token
                     );
-                _output.WriteInfo(string.Format("Project '{0}' is running.", info.ProjectName));
+                _output.WriteInfo(string.Format("Project '{0}' is running.", info.ProjectDetails.ProjectName));
             }
 
         }

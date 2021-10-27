@@ -36,12 +36,9 @@ namespace MorphCmd.BusinessLogic.Commands
                 _output.WriteInfo("Info about task:");
                 _output.WriteInfo(string.Format("Id:'{0}'", task.Id));
                 _output.WriteInfo(string.Format("Name:'{0}'", task.TaskName));
-                _output.WriteInfo(string.Format("IsRunning:'{0}'", task.IsRunning));                
                 _output.WriteInfo(string.Format("Enabled:'{0}'", task.Enabled));
                 _output.WriteInfo(string.Format("Note:'{0}'", task.Note));
                 _output.WriteInfo(string.Format("ProjectPath:'{0}'", task.ProjectPath));
-                _output.WriteInfo(string.Format("StatusText:'{0}'", task.StatusText));
-                _output.WriteInfo(string.Format("TaskState:'{0}'", task.TaskState));
                 _output.WriteInfo("Task Parameters:");
                 foreach (var parameter in task.TaskParameters)
                 {

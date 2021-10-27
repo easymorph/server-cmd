@@ -9,7 +9,8 @@ using MorphCmd.Models;
 using Morph.Server.Sdk.Exceptions;
 using System.Security.Authentication;
 using System.Net;
-#if NETCOREAPP2_0
+using System.Reflection;
+#if NETCOREAPP3_1
 using System.Net.Http;
 #endif
 
@@ -83,7 +84,7 @@ namespace MorphCmd
                 consoleOutput.WriteError(rpe.ServerResponseString);
             }
 
-#if NETCOREAPP2_0
+#if NETCOREAPP3_1
             else if (e is HttpRequestException m && m.HResult == -2147012721)
 #elif NET45
             else if (e is AuthenticationException)
@@ -115,10 +116,16 @@ namespace MorphCmd
             try
             {
                 NetworkUtil.ConfigureServicePointManager(parameters.SuppressSslErrors);
-#if NETCOREAPP2_0
+#if NETCOREAPP3_1
                 NetworkUtil.ConfigureServerCertificateCustomValidationCallback(parameters.SuppressSslErrors);
 #endif
                 //MorphServerApiClientGlobalConfig.FileTransferTimeout = TimeSpan.FromSeconds(2);
+
+                
+                Assembly thisAssem = typeof(Program).Assembly;
+                var assemblyVersion = thisAssem.GetName().Version;
+                MorphServerApiClientGlobalConfig.ClientId = "EasyMorph ems-cmd/"+ assemblyVersion.ToString();
+                MorphServerApiClientGlobalConfig.ClientType = "ems-cmd/Native";
 
                 var apiClient = new MorphServerApiClient(new Uri(parameters.Host));
                 var output = new ConsoleOutput();
