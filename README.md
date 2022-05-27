@@ -4,9 +4,11 @@ EasyMorph Server Command Line Client (in further text – **ems-cmd**) allows yo
 
 
 #### Requirements
-1. OS Windows x86/x64  with .Net 4.5 or later
-2. Morph.Server.Sdk.dll (deployed together with ems-cmd). Also [hosted on github](https://github.com/easymorph/server-sdk)  
-3. [EasyMorph Server 1.2](http://easymorph.com/server.html) or higher (installed on a separate machine)
+1. Comitable OS
+a. OS Windows x86/x64  with .Net 4.7.2 or later
+b. OS Windows/ Linux / MacOS with dotnet 3.1 or higher (netcoreapp3.1)
+3. Morph.Server.Sdk.dll (deployed together with ems-cmd). Also [hosted on github](https://github.com/easymorph/server-sdk)  
+4. [EasyMorph Server 1.2](http://easymorph.com/server.html) or higher (installed on a separate machine)
 
 
 #### Download
