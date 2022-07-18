@@ -19,7 +19,8 @@ namespace MorphCmd.Models
         ValidateTasks,
         ListSpaces,
         SpaceStatus,
-        ListTasks
+        ListTasks,
+        HttpSecureChallengeTest
 
 
     }

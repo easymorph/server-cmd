@@ -49,7 +49,7 @@ namespace MorphCmd.BusinessLogic
                     parameters.SpaceName = "default";
                 }
 
-#if DEBUG
+#if false
                 await Task.Factory.StartNew (async () => {
                     try {
                         await cmd.Execute(parameters);

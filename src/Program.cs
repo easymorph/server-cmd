@@ -10,6 +10,7 @@ using Morph.Server.Sdk.Exceptions;
 using System.Security.Authentication;
 using System.Net;
 using System.Reflection;
+using Morph.Server.Sdk.Model;
 #if NETCOREAPP3_1
 using System.Net.Http;
 #endif
@@ -127,7 +128,12 @@ namespace MorphCmd
                 MorphServerApiClientGlobalConfig.ClientId = "EasyMorph ems-cmd/"+ assemblyVersion.ToString();
                 MorphServerApiClientGlobalConfig.ClientType = "ems-cmd/Native";
 
-                var apiClient = new MorphServerApiClient(new Uri(parameters.Host));
+                var apiClient = new MorphServerApiClient(
+                    new ClientConfiguration()
+                {
+                    ApiUri = new Uri(parameters.Host),
+                    HttpSecurity = HttpSecurity.ForcedHttps
+                    });
                 var output = new ConsoleOutput();
                 var input = new ConsoleInput();
                 var handler = new CommandsHandler(output, input, apiClient);
