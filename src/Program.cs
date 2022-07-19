@@ -132,7 +132,7 @@ namespace MorphCmd
                     new ClientConfiguration()
                 {
                     ApiUri = new Uri(parameters.Host),
-                    HttpSecurity = HttpSecurity.ForcedHttps
+                    
                     });
                 var output = new ConsoleOutput();
                 var input = new ConsoleInput();

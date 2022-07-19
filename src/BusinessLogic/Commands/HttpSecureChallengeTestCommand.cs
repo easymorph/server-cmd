@@ -23,12 +23,12 @@ namespace MorphCmd.BusinessLogic.Commands
         public async Task Execute(Parameters parameters)
         {
             _output.WriteInfo($"Checking server secure challenge ...");
-            _output.WriteInfo("HttpSecurity: " + _apiClient.HttpSecurity);
+            _output.WriteInfo("HttpSecurityState: " + _apiClient.HttpSecurityState);
 
             using (var apiSession = await OpenSession(parameters))
             {
 
-                _output.WriteInfo("HttpSecurity: " + _apiClient.HttpSecurity);
+                _output.WriteInfo("HttpSecurityState: " + _apiClient.HttpSecurityState);
                 
                 
           
