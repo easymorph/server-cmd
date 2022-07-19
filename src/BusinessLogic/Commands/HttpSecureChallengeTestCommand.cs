@@ -25,15 +25,22 @@ namespace MorphCmd.BusinessLogic.Commands
             _output.WriteInfo($"Checking server secure challenge ...");
             _output.WriteInfo("HttpSecurityState: " + _apiClient.HttpSecurityState);
 
-            using (var apiSession = await OpenSession(parameters))
-            {
+            var status = await _apiClient.GetServerStatusAsync(_cancellationTokenSource.Token);
 
-                _output.WriteInfo("HttpSecurityState: " + _apiClient.HttpSecurityState);
-                
-                
-          
-                _output.WriteInfo("done");
-            }
+            _output.WriteInfo("STATUS:");
+            _output.WriteInfo($"StatusCode: {status.StatusCode}");
+            _output.WriteInfo($"StatusMessage: {status.StatusMessage}");
+            _output.WriteInfo($"ServerVersion: {status.Version}");
+            _output.WriteInfo($"InstanceRunId: {status.InstanceRunId}");
+            _output.WriteInfo("HttpSecurityState: " + _apiClient.HttpSecurityState);
+            var status3 = await _apiClient.GetServerStatusAsync(_cancellationTokenSource.Token);
+
+            _output.WriteInfo("HttpSecurityState: " + _apiClient.HttpSecurityState);
+            
+            
+      
+            _output.WriteInfo("done");
+            
 
         }
     }
