@@ -126,6 +126,7 @@ namespace MorphCmd.BusinessLogic.Commands
                     }
                 }
             }
+            _output.WriteInfo("Operation completed");
         }
     }
 }

@@ -39,6 +39,8 @@ namespace MorphCmd.BusinessLogic.Commands
                     return new SpaceStatusCommand(output, input, apiClient);
                 case Command.ListTasks:
                     return new ListTasksCommand(output, input, apiClient);
+                case Command.HttpSecureChallengeTest:
+                    return new HttpSecureChallengeTestCommand(output, input, apiClient);
                 default:
                     throw new Exception("Command not supported");
             }
