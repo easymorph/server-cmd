@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ems-cmd")]
-[assembly: AssemblyCopyright("Copyright © EasyMorph Inc. 2017-2022")]
+[assembly: AssemblyCopyright("Copyright © EasyMorph Inc. 2017-2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -18,5 +18,5 @@ using System.Runtime.InteropServices;
 [assembly: Guid("6e61eac0-2957-415d-89af-ea675fc244cb")]
 
 
-[assembly: AssemblyVersion("5.2.2.0")]
-[assembly: AssemblyFileVersion("5.2.2.0")]
+[assembly: AssemblyVersion("5.3.2.0")]
+[assembly: AssemblyFileVersion("5.3.2.0")]
