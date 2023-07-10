@@ -55,7 +55,10 @@ namespace MorphCmd.BusinessLogic.Commands
                     }
                     else if (e.State == FileProgressState.Processing)
                     {
-                        progress.Report(e.Percent / 100);
+                        if (e.Percent.HasValue)
+                        {
+                            progress.Report(e.Percent.Value / 100);
+                        }
                     }
                     else if (e.State == FileProgressState.Finishing)
                     {

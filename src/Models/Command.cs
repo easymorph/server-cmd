@@ -14,6 +14,7 @@ namespace MorphCmd.Models
         Status,
         Upload,
         Browse,
+        FilesSearch,
         Download,
         Del,
         ValidateTasks,

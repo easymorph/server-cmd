@@ -27,6 +27,24 @@ namespace MorphCmd.BusinessLogic
 
             if (paramsDict.ContainsKey("location"))
                 parameters.Location = paramsDict["location"];
+            if (paramsDict.ContainsKey("lookup-string"))
+                parameters.LookupString = paramsDict["lookup-string"];
+            if (paramsDict.ContainsKey("file-extensions"))
+                parameters.FileExtensions = paramsDict["file-extensions"];
+            if (paramsDict.ContainsKey("offset"))
+            {
+                if(int.TryParse(paramsDict["offset"], out var offset)){
+                    parameters.Offset = offset;
+                }
+            }
+
+            if (paramsDict.ContainsKey("limit"))
+            {
+                if (int.TryParse(paramsDict["limit"], out var limit)){
+                    parameters.Limit = limit;
+                }
+            }
+
 
             if (paramsDict.ContainsKey("y"))
                 parameters.YesToAll = true;

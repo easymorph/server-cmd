@@ -27,6 +27,8 @@ namespace MorphCmd.BusinessLogic.Commands
                     return new UploadFileCommand(output, input, apiClient);
                 case Command.Browse:
                     return new BrowseFilesCommand(output, input, apiClient);
+                case Command.FilesSearch:
+                    return new QuickFilesSearchCommand(output, input, apiClient);
                 case Command.Del:
                     return new DeleteFileCommand(output, input, apiClient);
                 case Command.Download:

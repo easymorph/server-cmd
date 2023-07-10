@@ -14,8 +14,14 @@ namespace MorphCmd.Models
         public string SpaceName { get; set; }
         public string Source { get; set; }
         public string Target { get; set; }
+
+        public string LookupString { get; set; }
+        public string FileExtensions { get; set; }
         public string Location { get; set; }
-        
+
+        public int? Offset { get; set; }
+        public int? Limit { get; set; }
+
         public Guid? TaskId { get; set; }
         public bool YesToAll { get; set; }
         public string Host { get; set; }
