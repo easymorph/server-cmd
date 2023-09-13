@@ -1,54 +1,50 @@
 ## Introduction
+The EasyMorph Server Command Line Client (further – **ems-cmd**) is an open-source cross-platform utility that allows performing  from the command line various operations with tasks, files, and other features of EasyMorph Server (further - just Server). Under the hood, the utility uses the open-source [EasyMorph Server .NET SDK](https://github.com/easymorph/server-sdk) to communicate with EasyMorph Server via the REST API and can be used as a self-explanatory example of using the SDK.
 
-EasyMorph Server Command Line Client (in further text – **ems-cmd**) allows you to run server commands via REST API.
+### Requirements
+**Compatible OS**
 
+OS Windows x86/x64  with .Net 4.7.2 or later.
 
-#### Requirements
-**Compatible OS:**
-
-OS Windows x86/x64  with .Net 4.7.2 or later
-
-OS Windows/ Linux / MacOS with net 6.0 or higher (net6.0)
+OS Windows/ Linux / MacOS with net 6.0 or higher (net6.0).
 
 **EasyMorh Server**
 
 Morph.Server.Sdk.dll (deployed together with ems-cmd). Also [hosted on github](https://github.com/easymorph/server-sdk)  
 
-[EasyMorph Server 5.0](http://easymorph.com/server.html) or higher (installed on a separate machine)
+[EasyMorph Server 5.0](http://easymorph.com/server.html) or higher.
 
 
-#### Download
-ems-cmd comes together with EasyMorph Server. Also it can be [downloaded](https://github.com/easymorph/server-cmd/releases) separately 
+### Download
+ems-cmd comes together with EasyMorph Server. Also, it can be [downloaded](https://github.com/easymorph/server-cmd/releases) separately.
  
 
-#### General command format:
+### General syntax
 
 ```
-ems-cmd <commad> <host> -param1 value1 -param2 "value two"
+ems-cmd <command> <host> -param1 value1 -param2 "value two"
 ```
-
 
 where
 
-+ **```<command>```** - command to execute. See [Commands](#commands) section for details.
-+  **```<host>```** - Server host like `http://192.168.100.200:6330`.
-  
++ **```<command>```** - a command to execute. See the [Commands](#commands) section for details.
++  **```<host>```** - the Server host, for instance: `http://192.168.100.200:6330`.
 
-#### exit codes
+#### Exit codes
 ems-cmd  may return one of the following exit codes:
 * `0` ems-cmd was successfully run to completion.
 * `1` A fatal error occurred during command parsing or execution.
 
 #### Authorization  
-For password protected spaces you should pass password via command parameter `-password`.
+For password-protected spaces, you should pass the password via the command parameter `-password`.
 ```
 ems-cmd upload http://192.168.100.200:6330  -space Default -password your_password -source D:\your\local\folder\file.xml -target \
 ```
-In the example above, a session will be opened for the specified space Default, of course if password was correct. In case of incorrect password or public spaces, error will be thrown.
-Some hash computations are applied to the password before it is sent to the server. 
+In the example above, a session will be opened for the specified space Default, assuming the password is correct. In case of an incorrect password or if the space doesn't require a password, an error will be thrown.
+Some hash computations are applied to the password before it is sent to the Server. 
 
 
-### Commands
+## Commands
 
 ### Status and metadata
 
@@ -58,7 +54,7 @@ Some hash computations are applied to the password before it is sent to the serv
 ems-cmd status http://192.168.100.200:6330
 ```
 ###### Parameters
-This command has no additional parameters
+This command has no additional parameters.
 
 ###### Output
 ```
@@ -69,7 +65,6 @@ StatusMessage: Server is OK
 ServerVersion:1.3.0.0
 ```
 
-
 #### List spaces
 A list of all spaces will be displayed. This command doesn't require authorization.
 
@@ -77,7 +72,7 @@ A list of all spaces will be displayed. This command doesn't require authorizati
 ems-cmd listspaces http://192.168.100.200:6330 
 ```
 ###### Parameters
-This command has no additional parameters
+This command has no additional parameters.
 
 ###### Output
 ```
@@ -86,19 +81,19 @@ Available spaces:
   Default
 Listing done
 ```
-Asterisk `*` means that the space requires an authorization.
+Asterisk `*` means that the space requires authorization.
 
 
 #### Space status
-Returns specified space status. This command may require authorization if space is password protected.
+Returns the status of the specified space. This command may require authorization if the space is password-protected.
 
 ```bash
 ems-cmd spacestatus http://192.168.100.200:6330 -space "closed one" -password some_password
 ```
 ###### Parameters
 
-* `-space` - space name.
-* `-password` - if password is required.
+* `-space` - the space name.
+* `-password` - the password (if required).
 
 ###### Output
 ```
@@ -109,16 +104,14 @@ Permissions: FilesList, FileDownload
 done
 ```
 
-
-
 ### Tasks
 #### List tasks
-This command will list all tasks in the space.
+This command lists all tasks in the specified space.
 ```
 ems-cmd listtasks http://192.168.100.200:6330 -space Default
 ```
 ###### Parameters
-* `-space` - space name, e.g. `Default`
+* `-space` - space name, e.g. `Default`.
 
 ###### Output
 ```
@@ -136,9 +129,8 @@ Allows obtaining metadata about a task and its settings.
 ems-cmd gettask  http://192.168.100.200:6330 -space Default -taskID 59b824f0-4b81-453f-b9e0-1c58b97c9fb9
 ```
 ###### Parameters
-* `-space` - space name, e.g. `Default`
-* `-taskID` - task guid.
-
+* `-space` - space name, e.g. `Default`.
+* `-taskID` - task's GUID.
 
 ###### Output
 ```
@@ -160,41 +152,31 @@ Parameter 'ZFile' = 'C:\Users\Public\Documents\Morphs\file.csv'
 Done
 ```
 
-
-
 #### Start a task synchronously
-This command will start the specified task and wait until it is finished. 
+This command starts the specified task and waits until it is finished.
 
-To start the task you need to know the space name and the task ID. 
-See the task execution server log to determine task execution info.
-
+To start the task, you need to know the space name and the task ID. The task ID can be seen in the URL of the task settings page. For instance, if the URL of the task setting page is  `http://localhost:6330/default/tasks/edit/59b824f0-4b81-453f-b9e0-1c58b97c9fb9`, then `59b824f0-4b81-453f-b9e0-1c58b97c9fb9` - is the GUID of the task.
 
 ```
 ems-cmd run http://192.168.100.200:6330 -space Default -taskID 59b824f0-4b81-453f-b9e0-1c58b97c9fb9
 ```
 ###### Parameters
-* `-space` - space name, e.g. `Default`
-* `-taskID` - task guid.
-* `-param:XXX ZZ` - set task parameter `XXX` with value `ZZ`.
+* `-space` - space name, e.g. `Default`.
+* `-taskID` - task's GUID.
+* `-param:XXX ZZ` - assign task parameter `XXX` with value `ZZ`.
 
-Task guid can be found in the browser location toolbar. E.g, if you have clicked on the edit task link, your browser location seems to be  `http://localhost:6330/default/tasks/edit/59b824f0-4b81-453f-b9e0-1c58b97c9fb9`, where `59b824f0-4b81-453f-b9e0-1c58b97c9fb9` - is a desired value
+If you want to pass (or override) parameters that were defined in the task settings, add `-param:XXX ZZ` to the ems-cmd execution line. Here, `XXX` is a parameter name, and `ZZ` is the parameter value. At least one space between a parameter name and the parameter value is required.
 
-If you want to pass (or override) parameters that were defined in  morph project, add `-param:XXX ZZ` to ems-cmd execution line. 
-Where `XXX`  is a parameter name and `ZZ` is a parameter value. 
-At least one space between  parameter name and parameter value is required.
-
-
-E.g. If you've defined parameter `Timeout` in your morph project, and want to set it to 73 use `-param:Timeout 73`. Pay attention, that parameters are case sensitive.
-
+For instance, if you have a parameter named `Timeout` in your EasyMorph project and want to set it to 73, use `-param:Timeout 73`. Note that parameter names are case-sensitive.
 
 Examples:
 
 
-Set parameter `Rounds` to `10` :   `-param:Timeout 73`
+Set parameter `Rounds` to `10`:   `-param:Rounds 10`
 
-Set parameter `Full name` to `John Smith` :   `-param:"Full name" "John Smith"`
+Set parameter `Full name` to `John Smith`:   `-param:"Full name" "John Smith"`
 
-Set parameter `From Date` to  the `10th of December 2000` :   `-param:"From Date" "2000-12-10"`   (ISO 8601 date format)
+Set parameter `From Date` to December, 10th 2000:   `-param:"From Date" "2000-12-10"`   (the ISO 8601 date format)
 
 
 ###### Output
@@ -206,38 +188,32 @@ Task 59b824f0-4b81-453f-b9e0-1c58b97c9fb9 completed
 ```
 
 #### Start a task asynchronously (fire and forget)
-This command return control immediately after task was enqueued 
+This command returns control immediately after the task is enqueued for execution by the Server.
 
+To start the task, you need to know the space name and the task ID. The task ID can be seen in the URL of the task settings page. For instance, if the URL of the task setting page is  `http://localhost:6330/default/tasks/edit/59b824f0-4b81-453f-b9e0-1c58b97c9fb9`, then `59b824f0-4b81-453f-b9e0-1c58b97c9fb9` - is the GUID of the task.
 
-To start the task you need to know task space name and task ID. 
-Make sure to check the task execution log at server to determine task execution status.
+To see whether the task finished successfully or not, see the Server journal.
+
 ```
 ems-cmd runasync http://192.168.100.200:6330 -space Default -taskID 59b824f0-4b81-453f-b9e0-1c58b97c9fb9
 ```
 ###### Parameters
-* `-space` - space name, e.g. `Default`
-* `-taskID` - task guid.
-* `-param:XXX ZZ` - set task parameter `XXX` with value `ZZ`.
+* `-space` - space name, e.g. `Default`.
+* `-taskID` - task GUID.
+* `-param:XXX ZZ` - assign task parameter `XXX` with value `ZZ`.
 
-Task guid can be found in the browser location toolbar. E.g, if you have clicked on the edit task link, your browser location seems to be  `http://localhost:6330/default/tasks/edit/59b824f0-4b81-453f-b9e0-1c58b97c9fb9`, where `59b824f0-4b81-453f-b9e0-1c58b97c9fb9` - is a desired value
+If you want to pass (or override) parameters that were defined in the task settings, add `-param:XXX ZZ` to the ems-cmd execution line. Here, `XXX` is a parameter name, and `ZZ` is the parameter value. At least one space between a parameter name and the parameter value is required.
 
-If you want to pass (or override) parameters that were defined in  morph project, add `-param:XXX ZZ` to ems-cmd execution line. 
-Where `XXX`  is a parameter name and `ZZ` is a parameter value. 
-At least one space between  parameter name and parameter value is required.
-
-
-E.g. If you've defined parameter `Timeout` in your morph project, and want to set it to 73 use `-param:Timeout 73`. Pay attention, that parameters are case sensitive.
-
+For instance, if you have a parameter named `Timeout` in your EasyMorph project and want to set it to 73, use `-param:Timeout 73`. Note that parameter names are case-sensitive.
 
 Examples:
 
 
-Set parameter `Rounds` to `10` :   `-param:Timeout 73`
+Set parameter `Rounds` to `10`:   `-param:Rounds 10`
 
-Set parameter `Full name` to `John Smith` :   `-param:"Full name" "John Smith"`
+Set parameter `Full name` to `John Smith`:   `-param:"Full name" "John Smith"`
 
-Set parameter `From Date` to  the `10th of December 2000` :   `-param:"From Date" "2000-12-10"`   (ISO 8601 date format)
-
+Set parameter `From Date` to December, 10th 2000:   `-param:"From Date" "2000-12-10"`   (the ISO 8601 date format)
 
 ###### Output
 ```
@@ -245,12 +221,10 @@ Attempting to start task 59b824f0-4b81-453f-b9e0-1c58b97c9fb9
 Project 'sample.morph' is running.
 ```
 
-
-
 ### Files
 
 #### Browse files
-This command shows the contents of a folder.
+This command shows the contents of the specified folder.
 
 ```
 ems-cmd browse http://192.168.100.200:6330 -space Default -location "\folder 2"
@@ -258,7 +232,6 @@ ems-cmd browse http://192.168.100.200:6330 -space Default -location "\folder 2"
 ###### Parameters
 * `-space` - space name, e.g. `Default`
 * `-location` - remote folder(relative path in the space `-space`).
-
 
 ###### Output
 ```
@@ -273,12 +246,10 @@ Listing done
 
 
 #### Download a file
-This command will download one single file from server.
+This command will download one single file from Server.
 
-If local file already exists, you will be prompted to overwrite it. 
-Notice, that when you are using a redirected output (e.g. to the file) and local file already exists, download will fail. 
-In any case, you may use parameter `/y` to overwrite existing file without any prompts.
-
+If a local file with the same name already exists, you will be prompted to overwrite it. Notice, that when you are using a redirected output (e.g. to a file) and a local file already exists, downloading will fail.
+Use the parameter `/y` to always overwrite existing files without prompting for a user action.
 
 Be careful with folders that contain spaces in their names. You should add quotation marks around such parameter values. 
 Keep in mind, that sequence  `\"` will escape double quotes. So don't use it at the end of the parameter value.
@@ -291,9 +262,9 @@ ems-cmd download http://192.168.100.200:6330 -space Default -target "D:\local\fo
 ```
 ###### Parameters
 * `-space` - space name, e.g. `Default`
-* `-target` - destination folder (you local folder).
+* `-target` - destination folder (your local folder).
 * `-source` - relative path to file in the space `-space`
-* `/y` - overwrite existing file (silent agree)
+* `/y` - overwrite an existing file (silent confirmation)
 
 ###### Output
 ```
@@ -301,14 +272,12 @@ Downloading file 'server\folder\file.xml' from space 'Default' into 'D:\your\loc
 Operation completed
 ```
 
-
 #### Upload a file
-This command will upload one single to Server.
+This command uploads one single to Server.
 
-If remote file already exists, you will be prompted to overwrite it. 
-Notice, that when you are using a redirected output (e.g. to the file) and remote file already exists, upload will fail. 
-In any case, you may use parameter `/y` to overwrite existing file without any prompts.
-
+If a remote file with the same name already exists, you will be prompted to overwrite it. 
+Notice, that when you are using a redirected output (e.g. to a file) and a remote file already exists, uploading will fail. 
+Use parameter `/y` to always overwrite existing files without prompting for a user action.
 
 Be careful with folders that contain spaces in their names. You should add quotation marks around such parameter values. 
 Keep in mind, that sequence  `\"` will escape double quotes. So don't use it at the end of the parameter value.
@@ -332,9 +301,8 @@ Uploading file 'D:\your\local\folder\file.xml' to folder '\' of space 'Default'.
 Operation completed
 ```
 
-
 #### Delete file
-This command will delete a remote file.
+This command deletes a remote file (i.e. a file stored on Server).
 
 ```
 ems-cmd del http://192.168.100.200:6330 -space Default -target "folder 2\file.xml" 
@@ -345,7 +313,7 @@ ems-cmd del http://192.168.100.200:6330 -space Default -target "folder 2\file.xm
 
 
 ### SSL errors
-In case if you want to suppress ssl errors,  use additional parameter `/suppress-ssl-errors`.
+If you want to suppress SSL errors,  use the additional parameter `/suppress-ssl-errors`.
 ```
 ems-cmd del http://192.168.100.200:6330 -space Default -target "folder 2\file.xml" /suppress-ssl-errors 
 ```
@@ -353,6 +321,4 @@ ems-cmd del http://192.168.100.200:6330 -space Default -target "folder 2\file.xm
 ## License 
 
 **ems-cmd** is licensed under the [MIT license](https://github.com/easymorph/server-cmd/blob/master/LICENSE).
-
-
 
