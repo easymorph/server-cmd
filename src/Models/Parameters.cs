@@ -28,6 +28,14 @@ namespace MorphCmd.Models
         public string Password { get; set; }
         public bool SuppressSslErrors { get; set; }
         public List<TaskRunParameter> TaskRunParameters { get; set; }
+
+        #region Shared Memory Command Parameters 
+
+        public string Key { get; set; }
+        public string Value { get; set; }
+
+        #endregion
+        
         public Parameters()
         {
             TaskRunParameters = new List<TaskRunParameter>();
