@@ -31,6 +31,17 @@ namespace MorphCmd.BusinessLogic
                 case Command.Del:
                     output.WriteInfo("DEL usage sample: ems-cmd del http://10.20.30.40:6330 -space Default -target \"folder 1\\sample.txt\" ");
                     break;
+                
+                case Command.Remember:
+                    output.WriteInfo("REMEMBER usage sample: ems-cmd remember http://10.20.30.40:6330 -space Default -key path1\\path2\\abc -value XYZ");
+                    break;
+                case Command.Recall:
+                    output.WriteInfo("RECALL usage sample: ems-cmd recall http://10.20.30.40:6330 -space Default -key path1\\path2\\abc");
+                    break;
+                case Command.Forget:
+                    output.WriteInfo("FORGET usage sample: ems-cmd forget http://10.20.30.40:6330 -space Default -key path1\\path2\\abc");
+                    break;
+                
                 default:
                     output.WriteInfo("This command hasn't usage example");
                     break;

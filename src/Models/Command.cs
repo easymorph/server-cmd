@@ -21,8 +21,11 @@ namespace MorphCmd.Models
         ListSpaces,
         SpaceStatus,
         ListTasks,
-        HttpSecureChallengeTest
-
-
+        HttpSecureChallengeTest,
+        
+        // Shared memory commands
+        Remember,
+        Recall,
+        Forget,
     }
 }

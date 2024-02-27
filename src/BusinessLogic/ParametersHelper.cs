@@ -83,6 +83,11 @@ namespace MorphCmd.BusinessLogic
                 parameters.TaskId = guid;
 
             }
+            
+            if (paramsDict.TryGetValue("key", out var value))
+                parameters.Key = value;
+            if (paramsDict.TryGetValue("value", out value))
+                parameters.Value = value;
 
             if (Enum.TryParse<Command>(command.Trim(), true, out var cmd))
             {

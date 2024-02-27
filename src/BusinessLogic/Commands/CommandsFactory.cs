@@ -43,6 +43,12 @@ namespace MorphCmd.BusinessLogic.Commands
                     return new ListTasksCommand(output, input, apiClient);
                 case Command.HttpSecureChallengeTest:
                     return new HttpSecureChallengeTestCommand(output, input, apiClient);
+                case Command.Remember:
+                    return new SharedMemoryRememberCommand(output, input, apiClient);
+                case Command.Recall:
+                    return new SharedMemoryRecallCommand(output, input, apiClient);
+                case Command.Forget:
+                    return new SharedMemoryForgetCommand(output, input, apiClient);
                 default:
                     throw new Exception("Command not supported");
             }
