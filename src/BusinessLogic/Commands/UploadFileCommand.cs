@@ -79,14 +79,14 @@ namespace MorphCmd.BusinessLogic.Commands
             {
 
                 {
-                    var spaceBrowsing = await _apiClient.SpaceBrowseAsync(apiSession, parameters.Target, _cancellationTokenSource.Token);
-                    var spaceStatus = await _apiClient.GetSpaceStatusAsync(apiSession, _cancellationTokenSource.Token);
+                    var spaceBrowsing = await _apiClient.SpaceBrowseAsync(apiSession, parameters.SpaceName, parameters.Target, _cancellationTokenSource.Token);
+                    var spaceStatus = await _apiClient.GetSpaceStatusAsync(apiSession, parameters.SpaceName, _cancellationTokenSource.Token);
                     if (!spaceStatus.UserPermissions.Contains(UserSpacePermission.FileUpload))
                     {
                         throw new Exception("Uploading to this space is disabled");
                     }
 
-                    var transferUtility = new DataTransferUtility(_apiClient, apiSession);
+                    var transferUtility = new DataTransferUtility(_apiClient, apiSession, parameters.SpaceName);
 
                     if (parameters.YesToAll)
                     {

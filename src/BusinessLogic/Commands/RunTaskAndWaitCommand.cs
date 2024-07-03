@@ -40,9 +40,10 @@ namespace MorphCmd.BusinessLogic.Commands
             {
                 ComputationDetailedItem info = await _apiClient.StartTaskAsync(
                     apiSession,
+                    parameters.SpaceName,
                     new StartTaskRequest(parameters.TaskId.Value)
                     {
-                        TaskParameters = parameters.TaskRunParameters.Select(x => new TaskStringParameter(x.Name, x.Value)).ToArray()
+                        TaskParameters = parameters.TaskRunParameters.Select(x => new ParameterNameValue(x.Name, x.Value)).ToArray()
                     },
                     _cancellationTokenSource.Token);
 
@@ -53,12 +54,13 @@ namespace MorphCmd.BusinessLogic.Commands
                 {
                     await Task.Delay(TimeSpan.FromSeconds(2));
                 }
-                while ((info = await _apiClient.GetComputationDetailsAsync(apiSession, info.ComputationId, _cancellationTokenSource.Token)).State.IsRunning);
+                while ((info = await _apiClient.GetComputationDetailsAsync(apiSession, parameters.SpaceName, info.ComputationId, _cancellationTokenSource.Token)).State.IsRunning);
 
                 if (info.State is ComputationState.Finished finished)
                 {
 
                     var workflowResult = await _apiClient.GetWorkflowResultDetailsAsync(apiSession,
+                        parameters.SpaceName,
                         finished.ResultObtainingToken, _cancellationTokenSource.Token);
                     try
                     {
@@ -94,7 +96,9 @@ namespace MorphCmd.BusinessLogic.Commands
                     }
                     finally
                     {
-                        await _apiClient.AcknowledgeWorkflowResultAsync(apiSession, info.ComputationId,
+                        await _apiClient.AcknowledgeWorkflowResultAsync(apiSession,
+                            parameters.SpaceName,
+                            info.ComputationId,
                             _cancellationTokenSource.Token);
                     }
 

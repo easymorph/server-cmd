@@ -39,6 +39,7 @@ namespace MorphCmd.BusinessLogic.Commands
                 };
                 var data = await _apiClient.SpaceFilesQuickSearchAsync(
                     apiSession,
+                    parameters.SpaceName,
                     request,
                     _cancellationTokenSource.Token,
                     parameters.Offset,

@@ -29,8 +29,8 @@ namespace MorphCmd.BusinessLogic.Commands
 
             using (var apiSession = await OpenSession(parameters))
             {
-                _output.WriteInfo(string.Format("Deleting file {0} in space {1}...", parameters.Target, apiSession.SpaceName));
-                await _apiClient.SpaceDeleteFileAsync(apiSession, parameters.Target, _cancellationTokenSource.Token);
+                _output.WriteInfo(string.Format("Deleting file {0} in space {1}...", parameters.Target, parameters.SpaceName));
+                await _apiClient.SpaceDeleteFileAsync(apiSession, parameters.SpaceName, parameters.Target, _cancellationTokenSource.Token);
                 _output.WriteInfo("Operation completed");
             }
 

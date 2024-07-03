@@ -25,9 +25,10 @@ namespace MorphCmd.BusinessLogic.Commands
 
             using (var session = await OpenSession(parameters))
             {
-                _output.WriteInfo($"Saving shared memory record {parameters.Key} in space {session.SpaceName}...");
+                _output.WriteInfo($"Saving shared memory record {parameters.Key} in space {parameters.SpaceName}...");
                 _ = await _apiClient.SharedMemoryRemember(
                     session,
+                    parameters.SpaceName,
                     parameters.Key,
                     SharedMemoryValue.NewText(parameters.Value),
                     OverwriteBehavior.Overwrite,
