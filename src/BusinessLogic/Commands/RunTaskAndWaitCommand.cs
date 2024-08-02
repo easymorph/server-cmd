@@ -42,7 +42,7 @@ namespace MorphCmd.BusinessLogic.Commands
                     apiSession,
                     new StartTaskRequest(parameters.TaskId.Value)
                     {
-                        TaskParameters = parameters.TaskRunParameters.Select(x => new TaskStringParameter(x.Name, x.Value)).ToArray()
+                        TaskParameters = parameters.TaskRunParameters.Select(x => new ParameterNameValue(x.Name, x.Value)).ToArray()
                     },
                     _cancellationTokenSource.Token);
 
