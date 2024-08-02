@@ -89,7 +89,7 @@ namespace MorphCmd.BusinessLogic.Commands
                     throw new Exception("Space access restriction method is not supported by this client.");
             }
 
-            var session = await _apiClient.OpenSessionAsync(new OpenSessionRequest { SpaceName = parameters.SpaceName, Password = parameters.Password }, _cancellationTokenSource.Token);
+            var session = await _apiClient.OpenLegacySessionAsync(new OpenLegacySessionRequest { SpaceName = parameters.SpaceName, Password = parameters.Password }, _cancellationTokenSource.Token);
             _output.WriteInfo("Session opened");
             return session;
         }

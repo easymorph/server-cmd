@@ -37,6 +37,7 @@ namespace MorphCmd.BusinessLogic.Commands
             {
 
                 ComputationDetailedItem info = await _apiClient.StartTaskAsync(apiSession,
+                    parameters.SpaceName,
                     new StartTaskRequest(parameters.TaskId.Value)
                     {
                         TaskParameters = parameters.TaskRunParameters.Select(x => new ParameterNameValue(x.Name, x.Value)).ToArray()

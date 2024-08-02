@@ -33,7 +33,7 @@ namespace MorphCmd.BusinessLogic.Commands
                 try
                 {
                     _output.WriteInfo("Validating tasks for the project '" + parameters.Location + "'");
-                    var result = await _apiClient.ValidateTasksAsync(apiSession, parameters.Location, _cancellationTokenSource.Token);
+                    var result = await _apiClient.ValidateTasksAsync(apiSession, parameters.SpaceName, parameters.Location, _cancellationTokenSource.Token);
 
                     if (result.FailedTasks.Count == 0)
                     {
