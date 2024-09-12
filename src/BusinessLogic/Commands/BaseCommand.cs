@@ -63,31 +63,32 @@ namespace MorphCmd.BusinessLogic.Commands
             {
                 throw new Exception($"Server has no space '{parameters.SpaceName}'");
             }
-            switch (desiredSpace.SpaceAccessRestriction)
+
+
+            if (desiredSpace.SpaceAuthenticationProviderTypes.Contains(IdPType.SpacePwd))
             {
-                case SpaceAccessRestriction.None:
-                    _output.WriteInfo("Method: Anonymous access");
-                    break;
-                case SpaceAccessRestriction.BasicPassword when string.IsNullOrWhiteSpace(parameters.Password):
-                    _output.WriteInfo("Method: Password protected space");
+                _output.WriteInfo("Method: Password protected space");
+                if (string.IsNullOrWhiteSpace(parameters.Password))
+                {
                     throw new Exception($"Space '{parameters.SpaceName}' requires password. You should pass '-password' parameter");
-                case SpaceAccessRestriction.BasicPassword:
-                    _output.WriteInfo("Method: Password protected space");
-                    break;
-                case SpaceAccessRestriction.WindowsAuthentication:
-                    _output.WriteInfo("Method: Windows authentication");
-                    break;
-                case SpaceAccessRestriction.NotSupported when desiredSpace.IsPublic:
-                    _output.WriteInfo("Method: Fall-back anonymous session");
-                    break;
-                case SpaceAccessRestriction.NotSupported when !desiredSpace.IsPublic & string.IsNullOrWhiteSpace(parameters.Password):
-                    throw new Exception($"Space '{parameters.SpaceName}' requires password. You should pass '-password' parameter");
-                case SpaceAccessRestriction.NotSupported when !desiredSpace.IsPublic:
-                    _output.WriteInfo("Method: Fall-back password protected space");
-                    break;
-                default:
-                    throw new Exception("Space access restriction method is not supported by this client.");
+                }
+                
             }
+            else if (desiredSpace.SpaceAuthenticationProviderTypes.Contains(IdPType.Anonymous))
+            {
+                _output.WriteInfo("Method: Anonymous access");
+            }
+            else if (desiredSpace.SpaceAuthenticationProviderTypes.Contains(IdPType.AdSeamlessIdP))
+            {
+                // windows authentication            
+                _output.WriteInfo("Method: Windows authentication");
+            }
+            else
+            {
+                throw new Exception("Space access authentification method is not supported by this client.");
+            }
+
+           
 
             var session = await _apiClient.OpenLegacySessionAsync(new OpenLegacySessionRequest { SpaceName = parameters.SpaceName, Password = parameters.Password }, _cancellationTokenSource.Token);
             _output.WriteInfo("Session opened");
