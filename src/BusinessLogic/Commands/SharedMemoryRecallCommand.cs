@@ -23,8 +23,8 @@ namespace MorphCmd.BusinessLogic.Commands
             
             using (var session = await OpenSession(parameters))
             {
-                _output.WriteInfo($"Retrieving shared memory record {parameters.Key} in space {session.SpaceName}...");
-                var result = await _apiClient.SharedMemoryRecall(session, parameters.Key, _cancellationTokenSource.Token);
+                _output.WriteInfo($"Retrieving shared memory record {parameters.Key} in space {parameters.SpaceName}...");
+                var result = await _apiClient.SharedMemoryRecall(session, parameters.SpaceName, parameters.Key, _cancellationTokenSource.Token);
                 _output.WriteInfo(result.Contents.ToString());
             }
         }

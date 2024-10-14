@@ -22,8 +22,8 @@ namespace MorphCmd.BusinessLogic.Commands
 
             using (var session = await OpenSession(parameters))
             {
-                _output.WriteInfo($"Deleting shared memory record {parameters.Key} in space {session.SpaceName}...");
-                var deletedKeyCount = await _apiClient.SharedMemoryForget(session, parameters.Key,
+                _output.WriteInfo($"Deleting shared memory record {parameters.Key} in space {parameters.SpaceName}...");
+                var deletedKeyCount = await _apiClient.SharedMemoryForget(session, parameters.SpaceName, parameters.Key,
                     _cancellationTokenSource.Token);
                 _output.WriteInfo($"Operation completed, {deletedKeyCount} records deleted");
             }

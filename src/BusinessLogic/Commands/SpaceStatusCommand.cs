@@ -26,7 +26,7 @@ namespace MorphCmd.BusinessLogic.Commands
 
             using (var apiSession = await OpenSession(parameters))
             {
-                var data = await _apiClient.GetSpaceStatusAsync(apiSession,  _cancellationTokenSource.Token);
+                var data = await _apiClient.GetSpaceStatusAsync(apiSession, parameters.SpaceName,  _cancellationTokenSource.Token);
                 _output.WriteInfo("Space: " + data.SpaceName);
                 _output.WriteInfo("IsPublic: " + data.IsPublic);
                 _output.WriteInfo("Permissions: " + string.Join(", ", data.UserPermissions));                

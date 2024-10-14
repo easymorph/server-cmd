@@ -44,7 +44,7 @@ namespace MorphCmd.BusinessLogic.Commands
 
             using (var apiSession = await OpenSession(parameters))
             {
-                _output.WriteInfo(string.Format("Downloading file '{0}' from space '{1}' into '{2}'...", parameters.Source, apiSession.SpaceName, parameters.Target));
+                _output.WriteInfo(string.Format("Downloading file '{0}' from space '{1}' into '{2}'...", parameters.Source, parameters.SpaceName, parameters.Target));
 
                 ProgressBar progress = new ProgressBar(_output, 40);
                 _apiClient.OnDataDownloadProgress += (object sender, FileTransferProgressEventArgs e) =>
@@ -86,7 +86,9 @@ namespace MorphCmd.BusinessLogic.Commands
                         try
                         {
 
-                            using (var serverStreamingData = await _apiClient.SpaceOpenStreamingDataAsync(apiSession, parameters.Source, _cancellationTokenSource.Token))
+                            using (var serverStreamingData = await _apiClient.SpaceOpenStreamingDataAsync(apiSession,
+                                parameters.SpaceName,
+                                parameters.Source, _cancellationTokenSource.Token))
                                 using(var reader = new BinaryReader(serverStreamingData.Stream))
                             {
 
@@ -127,7 +129,8 @@ namespace MorphCmd.BusinessLogic.Commands
                             if (allowLoading)
                             {
                                 _output.WriteInfo(string.Format("Downloading '{0}' ...", parameters.Source));
-                                using (var serverStreamingData = await _apiClient.SpaceOpenStreamingDataAsync(apiSession, parameters.Source, _cancellationTokenSource.Token))
+                                using (var serverStreamingData = await _apiClient.SpaceOpenStreamingDataAsync(apiSession,
+                                    parameters.SpaceName,parameters.Source, _cancellationTokenSource.Token))
                                 {
                                     await serverStreamingData.Stream.CopyToAsync(streamToWriteTo, 81920, _cancellationTokenSource.Token);
                                 }

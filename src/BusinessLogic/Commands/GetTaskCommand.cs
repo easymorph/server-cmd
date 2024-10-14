@@ -32,7 +32,7 @@ namespace MorphCmd.BusinessLogic.Commands
             using (var apiSession = await OpenSession(parameters))
             {
 
-                var task = await _apiClient.GetTaskAsync(apiSession, parameters.TaskId.Value, _cancellationTokenSource.Token);
+                var task = await _apiClient.GetTaskAsync(apiSession, parameters.SpaceName, parameters.TaskId.Value, _cancellationTokenSource.Token);
                 _output.WriteInfo("Info about task:");
                 _output.WriteInfo(string.Format("Id:'{0}'", task.Id));
                 _output.WriteInfo(string.Format("Name:'{0}'", task.TaskName));
