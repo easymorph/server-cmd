@@ -311,6 +311,38 @@ ems-cmd del http://192.168.100.200:6330 -space Default -target "folder 2\file.xm
 * `-space` - space name, e.g. `Default`
 * `-target` - relative path in the space `-space` to file 
 
+### Shared Memory
+
+#### 'Recall' (read shared memory value)
+This command retrieves the value of a shared memory record as a string.
+
+```
+ems-cmd recall http://10.20.30.40:6330 -space Default -key path1\path2\abc
+```
+###### Parameters
+* `-space`: The name of the space, e.g., `Default`.
+* `-key`: The key for the shared memory, specified as an arbitrary string.
+
+#### 'Remember' (write shared memory value)
+This command writes a value to a shared memory record.
+
+```
+ems-cmd remember http://10.20.30.40:6330 -space Default -key path1\path2\abc -value XYZ
+```
+###### Parameters
+* `-space`: The name of the space, e.g., `Default`.
+* `-key`: The key for the shared memory record.
+* `-value`: The value to be stored in the shared memory record.
+
+#### 'Forget' (delete shared memory value)
+This command removes a shared memory record.
+
+```
+ems-cmd forget http://10.20.30.40:6330 -space Default -key path1\path2\abc
+```
+###### Parameters
+* `-space`: The name of the space, e.g., `Default`.
+* `-key`: The key for the shared memory record.
 
 ### SSL errors
 If you want to suppress SSL errors,  use the additional parameter `/suppress-ssl-errors`.
