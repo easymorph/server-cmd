@@ -27,5 +27,6 @@ namespace MorphCmd.Models
         Remember,
         Recall,
         Forget,
+        Increment
     }
 }

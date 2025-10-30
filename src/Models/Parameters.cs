@@ -33,6 +33,7 @@ namespace MorphCmd.Models
 
         public string Key { get; set; }
         public string Value { get; set; }
+        public decimal? By { get; set; }
 
         #endregion
         
