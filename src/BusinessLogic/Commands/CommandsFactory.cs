@@ -49,6 +49,8 @@ namespace MorphCmd.BusinessLogic.Commands
                     return new SharedMemoryRecallCommand(output, input, apiClient);
                 case Command.Forget:
                     return new SharedMemoryForgetCommand(output, input, apiClient);
+                case Command.Increment:
+                    return new SharedMemoryIncrementCommand(output, input, apiClient);
                 default:
                     throw new Exception("Command not supported");
             }

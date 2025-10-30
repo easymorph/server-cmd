@@ -10,3 +10,4 @@
 /src/bin/Release
 /src/obj/Release
 /src/*.snk
+/src/.idea

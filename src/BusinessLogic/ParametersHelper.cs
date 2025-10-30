@@ -89,6 +89,12 @@ namespace MorphCmd.BusinessLogic
             if (paramsDict.TryGetValue("value", out value))
                 parameters.Value = value;
 
+            if (paramsDict.TryGetValue("by", out value) &&
+                decimal.TryParse(value, out var by))
+            {
+                parameters.By = by;
+            }
+
             if (Enum.TryParse<Command>(command.Trim(), true, out var cmd))
             {
                 parameters.Command = cmd;
