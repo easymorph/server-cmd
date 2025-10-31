@@ -344,6 +344,17 @@ ems-cmd forget http://10.20.30.40:6330 -space Default -key path1\path2\abc
 * `-space`: The name of the space, e.g., `Default`.
 * `-key`: The key for the shared memory record.
 
+#### 'Increment' (increment shared memory value)
+This command increments a shared memory record.
+
+```
+ems-cmd increment http://10.20.30.40:6330 -space Default -key path1\path2\abc -by 2
+```
+###### Parameters
+* `-space`: The name of the space, e.g., `Default`.
+* `-key`: The key for the shared memory record. If a value with this key does not exist, the command fails.
+* `-by`: The increment value. Must be a decimal number (negative and fractional are allowed). If omitted, equals to 1.
+
 ### SSL errors
 If you want to suppress SSL errors,  use the additional parameter `/suppress-ssl-errors`.
 ```
